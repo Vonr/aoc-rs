@@ -2,6 +2,13 @@ use aoc_rs::solutions::*;
 use iai::runner;
 
 fn main() {
-    let joined = get_solution_tuples();
-    runner(joined.into_values().collect::<Vec<_>>().as_slice());
+    let joined = get_solution_tuples()
+        .into_values()
+        .flatten()
+        .flatten()
+        .map(|t| &t)
+        .collect::<Vec<_>>();
+    let joined = joined.as_slice();
+
+    runner(joined);
 }

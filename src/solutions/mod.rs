@@ -32,15 +32,15 @@ macro_rules! solutions {
             sols
         }
 
-        pub fn get_solution_tuples() -> BTreeMap<i32, Vec<Vec<(&'static str, Box<dyn Fn(&str) -> String>)>>> {
-            fn translate<D: Display + 'static>(f: fn(&str) -> D) -> Box<dyn Fn(&str) -> String> {
-                Box::new(move |x| f(x).to_string())
-            }
-            let mut sols: BTreeMap<i32, Vec<Vec<(&'static str, Box<dyn Fn(&str) -> String>)>>> = BTreeMap::new();
+        pub fn get_solution_tuples() -> BTreeMap<i32, Vec<Vec<(&'static str, fn())>>> {
+            let session = std::fs::read_to_string(".session").unwrap();
+            let session = session.trim_end();
+
+            let mut sols: BTreeMap<i32, Vec<Vec<(&'static str, fn())>>> = BTreeMap::new();
             $(
                 sols.insert($years, vec![$(
                     vec![$(
-                        (stringify!($parts), translate($parts))
+                        (stringify!($parts), || { $parts("").to_string(); })
                     ),*]
                 ),*]);
             )*
