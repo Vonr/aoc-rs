@@ -6,7 +6,6 @@ pub fn part1(input: &str) -> impl Display {
     let mut blocks = input
         .lines()
         .take_while(|l| !l.is_empty())
-        .collect::<Vec<_>>()
         .into_columns()
         .filter(|c| !c.chars().all(|c| matches!(c, ' ' | '[' | ']')))
         .map(|s| s.trim_start().chars().collect::<Vec<_>>())
@@ -31,7 +30,6 @@ pub fn part2(input: &str) -> impl Display {
     let mut blocks = input
         .lines()
         .take_while(|l| !l.is_empty())
-        .collect::<Vec<_>>()
         .into_columns()
         .filter(|c| !c.chars().all(|c| matches!(c, ' ' | '[' | ']')))
         .map(|s| s.trim_start().chars().collect::<Vec<_>>())
