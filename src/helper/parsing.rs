@@ -1,17 +1,18 @@
+use std::str::Lines;
+
 pub struct Columns<'a>(usize, usize, &'a [&'a str]);
 
 impl<'a> Iterator for Columns<'a> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.0 == self.1 {
+        if self.0 >= self.1 {
             return None;
         }
-
         let out = Some(
             self.2
                 .iter()
-                .map(|l| l.chars().nth(self.0).unwrap())
+                .filter_map(|l| l.chars().nth(self.0))
                 .collect::<String>(),
         );
         self.0 += 1;
@@ -23,15 +24,11 @@ pub trait IntoColumns<'a> {
     fn into_columns(self) -> Columns<'a>;
 }
 
-impl<'a> IntoColumns<'a> for &'a [&'a str] {
+impl<'a, T: Into<&'a [&'a str]>> IntoColumns<'a> for T {
     fn into_columns(self) -> Columns<'a> {
-        if self.is_empty() {
-            return Columns(0, 0, &[]);
-        }
-
-        let min_len: usize = self.iter().map(|s| s.len()).min().unwrap();
-
-        Columns(0, min_len, self)
+        let conv = self.into();
+        let min_len = conv.iter().map(|s| s.len()).min().unwrap_or(0);
+        Columns(0, min_len, conv)
     }
 }
 
