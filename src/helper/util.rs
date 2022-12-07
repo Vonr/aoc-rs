@@ -7,20 +7,20 @@ pub trait Unique {
 impl<const N: usize> Unique for [u8; N] {
     fn unique(&self) -> bool {
         let mut found = (0u128, 0u128);
+        let mut ones = 0;
 
-        for c in self {
+        for (i, c) in self.iter().enumerate() {
             if *c < 128 {
                 let val = 1 << c;
-                if (found.0 & val) != 0 {
-                    return false;
-                }
+                ones += 1 - ((found.0 & val) >> c);
                 found.0 |= val;
             } else {
                 let val = 1 << (c - 128);
-                if (found.1 & val) != 0 {
-                    return false;
-                }
+                ones += 1 - ((found.1 & val) >> (c - 128));
                 found.1 |= val;
+            }
+            if ones as usize != i + 1 {
+                return false;
             }
         }
         true
@@ -30,20 +30,20 @@ impl<const N: usize> Unique for [u8; N] {
 impl Unique for [u8] {
     fn unique(&self) -> bool {
         let mut found = (0u128, 0u128);
+        let mut ones = 0;
 
-        for c in self {
+        for (i, c) in self.iter().enumerate() {
             if *c < 128 {
                 let val = 1 << c;
-                if (found.0 & val) != 0 {
-                    return false;
-                }
+                ones += 1 - ((found.0 & val) >> c);
                 found.0 |= val;
             } else {
                 let val = 1 << (c - 128);
-                if (found.1 & val) != 0 {
-                    return false;
-                }
+                ones += 1 - ((found.1 & val) >> (c - 128));
                 found.1 |= val;
+            }
+            if ones as usize != i + 1 {
+                return false;
             }
         }
         true

@@ -1,20 +1,32 @@
-use std::fmt::Display;
+use std::{fmt::Display, ops::Range};
 
-use crate::helper::util::Unique;
+const unsafe fn unique<const N: usize>(arr: &[u8; N]) -> bool {
+    let mut found = 0u32;
+    let mut i = 0;
 
-pub fn solve(input: &str, size: usize) -> impl Display {
+    while i < N {
+        found |= 1u32.unchecked_shl(arr.get_unchecked(i).unchecked_sub(b'A') as u32);
+        i += 1;
+        if found.count_ones() as usize != i {
+            return false;
+        }
+    }
+    true
+}
+
+fn solve<const N: usize>(input: &str) -> impl Display {
     input
         .as_bytes()
-        .windows(size)
-        .position(Unique::unique)
+        .array_windows::<N>()
+        .position(|w| unsafe { unique(w) })
         .unwrap()
-        + size
+        + N
 }
 
 pub fn part1(input: &str) -> impl Display {
-    solve(input, 4)
+    solve::<4>(input)
 }
 
 pub fn part2(input: &str) -> impl Display {
-    solve(input, 14)
+    solve::<14>(input)
 }
