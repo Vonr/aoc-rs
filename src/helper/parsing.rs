@@ -1,4 +1,8 @@
-use std::{marker::PhantomData, str::Lines};
+use std::{
+    marker::PhantomData,
+    ops::{Add, Mul},
+    str::Lines,
+};
 
 pub struct Columns<T, U, V, I: Iterator<Item = T>, F: Fn(T, usize) -> Option<U>> {
     iter: I,
@@ -50,8 +54,51 @@ where
     }
 }
 
+pub trait BytesAsNumber {
+    /// # Safety
+    ///
+    /// self should be a slice of ASCII bytes of characters between b'0' and b'9'
+    unsafe fn as_num<N: From<u8> + Add<Output = N> + Mul<Output = N> + Default>(&self) -> N;
+}
+
+impl BytesAsNumber for [u8] {
+    unsafe fn as_num<N: From<u8> + Add<Output = N> + Mul<Output = N> + Default>(&self) -> N {
+        let mut out = N::default();
+        for b in self {
+            out = out * 10.into();
+            out = out + (b - b'0').into();
+        }
+        out
+    }
+}
+
+pub trait Position<T, F: Fn(&T) -> bool> {
+    fn position(&self, predicate: F) -> Option<usize>;
+    fn rposition(&self, predicate: F) -> Option<usize>;
+}
+
+impl<T> Position<T, fn(&T) -> bool> for [T] {
+    fn position(&self, predicate: fn(&T) -> bool) -> Option<usize> {
+        for (i, e) in self.iter().enumerate() {
+            if predicate(e) {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    fn rposition(&self, predicate: fn(&T) -> bool) -> Option<usize> {
+        for (i, e) in self.iter().enumerate().rev() {
+            if predicate(e) {
+                return Some(i);
+            }
+        }
+        None
+    }
+}
+
 mod tests {
-    use super::IntoColumns;
+    use super::{BytesAsNumber, IntoColumns};
 
     #[test]
     pub fn into_columns() {
@@ -74,5 +121,10 @@ mod tests {
                 .collect::<Vec<String>>(),
             vec!["ad", "be", "cf"]
         );
+    }
+
+    #[test]
+    pub fn ascii_as_num() {
+        assert_eq!(unsafe { b"123".as_num::<usize>() }, 123);
     }
 }

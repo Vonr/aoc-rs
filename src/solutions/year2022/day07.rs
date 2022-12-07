@@ -1,120 +1,114 @@
-use std::{
-    collections::{BTreeMap, HashMap},
-    fmt::Display,
-};
+use std::{collections::HashMap, fmt::Display};
+
+use crate::helper::parsing::{BytesAsNumber, Position};
 
 pub fn part1(input: &str) -> impl Display {
-    let mut sizes: BTreeMap<String, usize> = BTreeMap::new();
-    let mut dir = String::new();
-    let lines = input.lines();
-    for (i, line) in lines.clone().enumerate() {
-        match line {
-            line if line.starts_with("$ cd") => match &line[5..] {
-                "/" => dir = "/".to_owned(),
-                ".." => {
-                    dir = dir[..dir
-                        .chars()
-                        .enumerate()
-                        .filter(|(_, c)| *c == '/')
-                        .last()
-                        .unwrap()
-                        .0]
-                        .to_owned()
-                }
-                other => {
-                    if !dir.ends_with('/') {
-                        dir.push('/');
-                    }
-                    dir.push_str(&line[5..]);
-                }
-            },
-            line if line.starts_with("$ ls") => {
-                let old_dir = dir.clone();
-                if !dir.ends_with('/') {
-                    dir.push('/');
-                }
-                dir.push_str(&line[4..]);
-                let dir_size = lines
-                    .clone()
-                    .skip(i + 1)
-                    .take_while(|l| !l.starts_with('$'))
-                    .filter_map(|l| {
-                        if (b'0'..=b'9').contains(&l.as_bytes()[0]) {
-                            return Some(l.split_once(' ').unwrap().0.parse::<usize>().unwrap());
-                        }
-                        None
-                    })
-                    .sum::<usize>();
-                let iter = sizes.clone().into_iter();
-                for (k, v) in iter.filter(|(k, _)| dir.starts_with(k.as_str())) {
-                    sizes.insert(k.to_owned(), v + dir_size);
-                }
-                sizes.insert(dir, dir_size);
-                dir = old_dir;
+    let mut sizes: HashMap<Vec<u8>, usize> = HashMap::new();
+    let mut dir = Vec::new();
+    let mut len: usize = 0;
+    let mut size: usize = 0;
+
+    for (i, line) in input.lines().enumerate() {
+        if line.starts_with('$') {
+            if len != 0 {
+                sizes
+                    .iter_mut()
+                    .filter(|(k, _)| dir.starts_with(k))
+                    .for_each(|(k, v)| *v += size);
+                sizes.insert(dir.clone(), size);
+                dir.splice(len.., []);
+                len = 0;
+                size = 0;
             }
-            _ => (),
+
+            if let Some(after) = line.strip_prefix("$ cd ") {
+                match after {
+                    "/" => {
+                        dir.clear();
+                        dir.push(b'/');
+                    }
+                    ".." => {
+                        dir.splice(dir.rposition(|c| *c == b'/').unwrap().., []);
+                        if dir.is_empty() {
+                            dir.push(b'/');
+                        }
+                    }
+                    other => {
+                        if dir.last().map(|l| *l != b'/').unwrap_or_default() {
+                            dir.push(b'/');
+                        }
+                        dir.extend_from_slice(other.as_bytes());
+                    }
+                }
+            } else if let Some(after) = line.strip_prefix("$ ls") {
+                len = dir.len();
+                if !dir.last().unwrap() == b'/' {
+                    dir.push(b'/');
+                }
+                dir.extend_from_slice(after.trim_start().as_bytes());
+            }
+        } else if (b'0'..=b'9').contains(&line.as_bytes()[0]) {
+            size += unsafe { line.split_once(' ').unwrap().0.as_bytes().as_num::<usize>() };
         }
     }
     sizes.values().filter(|v| **v <= 100000).sum::<usize>()
 }
 
 pub fn part2(input: &str) -> impl Display {
-    let mut sizes: BTreeMap<String, usize> = BTreeMap::new();
-    let mut dir = String::new();
-    let lines = input.lines();
-    for (i, line) in lines.clone().enumerate() {
-        match line {
-            line if line.starts_with("$ cd") => match &line[5..] {
-                "/" => dir = "/".to_owned(),
-                ".." => {
-                    dir = dir[..dir
-                        .chars()
-                        .enumerate()
-                        .filter(|(_, c)| *c == '/')
-                        .last()
-                        .unwrap()
-                        .0]
-                        .to_owned()
-                }
-                other => {
-                    if !dir.ends_with('/') {
-                        dir.push('/');
-                    }
-                    dir.push_str(&line[5..]);
-                }
-            },
-            line if line.starts_with("$ ls") => {
-                let old_dir = dir.clone();
-                if !dir.ends_with('/') {
-                    dir.push('/');
-                }
-                dir.push_str(&line[4..]);
-                let dir_size = lines
-                    .clone()
-                    .skip(i + 1)
-                    .take_while(|l| !l.starts_with('$'))
-                    .filter_map(|l| {
-                        if (b'0'..=b'9').contains(&l.as_bytes()[0]) {
-                            return Some(l.split_once(' ').unwrap().0.parse::<usize>().unwrap());
-                        }
-                        None
-                    })
-                    .sum::<usize>();
-                let iter = sizes.clone().into_iter();
-                for (k, v) in iter.filter(|(k, _)| dir.starts_with(k.as_str())) {
-                    sizes.insert(k.to_owned(), v + dir_size);
-                }
-                sizes.insert(dir, dir_size);
-                dir = old_dir;
+    let mut sizes: HashMap<Vec<u8>, usize> = HashMap::new();
+    let mut dir = Vec::new();
+    let mut len: usize = 0;
+    let mut size: usize = 0;
+
+    for (i, line) in input.lines().enumerate() {
+        if line.starts_with('$') {
+            if len != 0 {
+                sizes
+                    .iter_mut()
+                    .filter(|(k, _)| dir.starts_with(k))
+                    .for_each(|(k, v)| *v += size);
+                sizes.insert(dir.clone(), size);
+                dir.splice(len.., []);
+                len = 0;
+                size = 0;
             }
-            _ => (),
+
+            if let Some(after) = line.strip_prefix("$ cd ") {
+                match after {
+                    "/" => {
+                        dir.clear();
+                        dir.push(b'/');
+                    }
+                    ".." => {
+                        dir.splice(dir.rposition(|c| *c == b'/').unwrap().., []);
+                        if dir.is_empty() {
+                            dir.push(b'/');
+                        }
+                    }
+                    other => {
+                        if dir.last().map(|l| *l != b'/').unwrap_or_default() {
+                            dir.push(b'/');
+                        }
+                        dir.extend_from_slice(other.as_bytes());
+                    }
+                }
+            } else if let Some(after) = line.strip_prefix("$ ls") {
+                len = dir.len();
+                if !dir.last().unwrap() == b'/' {
+                    dir.push(b'/');
+                }
+                dir.extend_from_slice(after.trim_start().as_bytes());
+            }
+        } else if (b'0'..=b'9').contains(&line.as_bytes()[0]) {
+            size += unsafe { line.split_once(' ').unwrap().0.as_bytes().as_num::<usize>() };
         }
     }
-    let sum = sizes.get("/").unwrap();
-    let mut values = sizes
+
+    let sum = sizes.get([b'/'].as_slice()).unwrap();
+    let free = 70000000 - *sum;
+    *sizes
         .values()
-        .filter(|v| 70000000 - *sum + *v > 30000000)
-        .collect::<Vec<_>>();
-    values.sort_unstable();
-    *values[0]
+        .filter(|v| free + *v > 30000000)
+        .min()
+        .unwrap()
 }
