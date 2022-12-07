@@ -1,6 +1,6 @@
 use std::{
     marker::PhantomData,
-    ops::{Add, Mul},
+    ops::{Add, AddAssign, Mul, MulAssign},
     str::Lines,
 };
 
@@ -58,42 +58,17 @@ pub trait BytesAsNumber {
     /// # Safety
     ///
     /// self should be a slice of ASCII bytes of characters between b'0' and b'9'
-    unsafe fn as_num<N: From<u8> + Add<Output = N> + Mul<Output = N> + Default>(&self) -> N;
+    unsafe fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T;
 }
 
 impl BytesAsNumber for [u8] {
-    unsafe fn as_num<N: From<u8> + Add<Output = N> + Mul<Output = N> + Default>(&self) -> N {
-        let mut out = N::default();
+    unsafe fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T {
+        let mut out = T::default();
         for b in self {
-            out = out * 10.into();
-            out = out + (b - b'0').into();
+            out *= 10.into();
+            out += (b - b'0').into();
         }
         out
-    }
-}
-
-pub trait Position<T, F: Fn(&T) -> bool> {
-    fn position(&self, predicate: F) -> Option<usize>;
-    fn rposition(&self, predicate: F) -> Option<usize>;
-}
-
-impl<T> Position<T, fn(&T) -> bool> for [T] {
-    fn position(&self, predicate: fn(&T) -> bool) -> Option<usize> {
-        for (i, e) in self.iter().enumerate() {
-            if predicate(e) {
-                return Some(i);
-            }
-        }
-        None
-    }
-
-    fn rposition(&self, predicate: fn(&T) -> bool) -> Option<usize> {
-        for (i, e) in self.iter().enumerate().rev() {
-            if predicate(e) {
-                return Some(i);
-            }
-        }
-        None
     }
 }
 

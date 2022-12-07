@@ -5,11 +5,11 @@ const unsafe fn unique<const N: usize>(arr: &[u8; N]) -> bool {
     let mut i = 0;
 
     while i < N {
-        found |= 1u32.unchecked_shl(arr.get_unchecked(i).unchecked_sub(b'A') as u32);
+        found |= 1u32.unchecked_shl((arr.get_unchecked(i).unchecked_sub(b'a')) as u32);
         i += 1;
-        if found.count_ones() as usize != i {
-            return false;
-        }
+    }
+    if found.count_ones() as usize != N {
+        return false;
     }
     true
 }
