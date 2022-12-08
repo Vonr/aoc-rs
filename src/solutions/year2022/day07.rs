@@ -36,22 +36,23 @@ unsafe fn as_usize(arr: &[u8]) -> usize {
     let rem = len % 4;
 
     for i in 0..eights {
+        let end = len - 8 * i;
         let m = usizex8::from_array([1000_0000, 100_0000, 10_0000, 1_0000, 1000, 100, 10, 1]);
-        let v = u8x8::from_slice(&arr[len - 8 * (i + 1)..len - 8 * i]) - u8x8::splat(b'0');
+        let v = u8x8::from_slice(&arr[end - 8..end]) - u8x8::splat(b'0');
         out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i * 8);
     }
 
     for i in 0..fours {
+        let end = len - eights * 8 - 4 * i;
         let m = usizex4::from_array([1000, 100, 10, 1]);
-        let v = u8x4::from_slice(&arr[len - eights * 8 - 4 * (i + 1)..len - eights * 8 - 4 * i])
-            - u8x4::splat(b'0');
+        let v = u8x4::from_slice(&arr[end - 4..end]) - u8x4::splat(b'0');
         out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i * 4 + eights * 8);
     }
 
     let mut temp = 0;
     for e in arr.iter().take(rem) {
         temp *= 10;
-        temp += (e - b'0') as usize;
+        temp += (e & 0xf) as usize;
     }
 
     out + temp * POW_10.get_unchecked(len - len % 4)
@@ -63,40 +64,36 @@ mod tests {
     #[allow(clippy::inconsistent_digit_grouping)]
     #[test]
     fn u64_parse() {
-        assert_eq!(unsafe { as_usize(b"123") }, 123);
-        assert_eq!(unsafe { as_usize(b"1234") }, 1234);
-        assert_eq!(unsafe { as_usize(b"12345") }, 1_2345);
-        if cfg!(target_pointer_width = "16") {
-            return;
-        }
-        assert_eq!(unsafe { as_usize(b"123456") }, 12_3456);
-        assert_eq!(unsafe { as_usize(b"1234567") }, 123_4567);
-        assert_eq!(unsafe { as_usize(b"12345678") }, 1234_5678);
-        assert_eq!(unsafe { as_usize(b"123456789") }, 1_23456789);
-        assert_eq!(unsafe { as_usize(b"1234567898") }, 12_34567898);
-        if cfg!(target_pointer_width = "64") {
-            assert_eq!(unsafe { as_usize(b"12345678987") }, 123_45678987);
-            assert_eq!(unsafe { as_usize(b"123456789876") }, 1234_56789876);
-            assert_eq!(unsafe { as_usize(b"1234567898765") }, 1_2345_67898765);
-            assert_eq!(unsafe { as_usize(b"12345678987654") }, 12_3456_78987654);
-            assert_eq!(unsafe { as_usize(b"123456789876543") }, 123_4567_89876543);
-            assert_eq!(unsafe { as_usize(b"1234567898765432") }, 12345678_98765432);
-            assert_eq!(
-                unsafe { as_usize(b"12345678987654321") },
-                1_23456789_87654321
-            );
-            assert_eq!(
-                unsafe { as_usize(b"123456789876543212") },
-                12_34567898_76543212
-            );
-            assert_eq!(
-                unsafe { as_usize(b"1234567898765432123") },
-                123_45678987_65432123
-            );
-            assert_eq!(
-                unsafe { as_usize(b"12345678987654321234") },
-                1234_56789876_54321234
-            );
+        unsafe {
+            unsafe fn correct(s: &str) {
+                assert_eq!(as_usize(s.as_bytes()), s.parse().unwrap());
+            }
+            correct("123");
+            correct("1234");
+            correct("12345");
+            if cfg!(target_pointer_width = "16") {
+                return;
+            }
+
+            correct("123456");
+            correct("1234567");
+            correct("12345678");
+            correct("123456789");
+            correct("1234567898");
+            if cfg!(target_pointer_width = "32") {
+                return;
+            }
+
+            correct("12345678987");
+            correct("123456789876");
+            correct("1234567898765");
+            correct("12345678987654");
+            correct("123456789876543");
+            correct("1234567898765432");
+            correct("12345678987654321");
+            correct("123456789876543212");
+            correct("1234567898765432123");
+            correct("12345678987654321234");
         }
     }
 }
