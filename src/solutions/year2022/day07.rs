@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Display};
+use std::{collections::HashMap, fmt::Display, hint::unreachable_unchecked};
 
 use bstr::{io::BufReadExt, ByteSlice};
 
@@ -34,19 +34,25 @@ unsafe fn as_usize(arr: &[u8]) -> usize {
     let eights = len / 8;
     let fours = (len % 8) / 4;
     let rem = len % 4;
+    let mut done = 0;
 
     for i in 0..eights {
-        let end = len - 8 * i;
-        let m = usizex8::from_array([1000_0000, 100_0000, 10_0000, 1_0000, 1000, 100, 10, 1]);
-        let v = u8x8::from_slice(&arr[end - 8..end]) - u8x8::splat(b'0');
-        out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i * 8);
+        let i = i * 8;
+        let end = len - i;
+        let m = usizex8::from_array(POW_10[..8].try_into().unwrap_unchecked()).reverse();
+        let v =
+            u8x8::from_array(arr[end - 8..end].try_into().unwrap_unchecked()) & u8x8::splat(0xf);
+        out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i + done);
     }
+    done += eights * 8;
 
     for i in 0..fours {
-        let end = len - eights * 8 - 4 * i;
-        let m = usizex4::from_array([1000, 100, 10, 1]);
-        let v = u8x4::from_slice(&arr[end - 4..end]) - u8x4::splat(b'0');
-        out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i * 4 + eights * 8);
+        let i = i * 4;
+        let end = len - done - i;
+        let m = usizex4::from_array(POW_10[..4].try_into().unwrap_unchecked()).reverse();
+        let v =
+            u8x4::from_array(arr[end - 4..end].try_into().unwrap_unchecked()) & u8x4::splat(0xf);
+        out += (m * v.cast()).reduce_sum() * POW_10.get_unchecked(i + done);
     }
 
     let mut temp = 0;

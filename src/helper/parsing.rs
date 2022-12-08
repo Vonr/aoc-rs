@@ -66,7 +66,7 @@ impl BytesAsNumber for [u8] {
         let mut out = T::default();
         for b in self {
             out *= 10.into();
-            out += (b - b'0').into();
+            out += (b & 0xf).into();
         }
         out
     }
