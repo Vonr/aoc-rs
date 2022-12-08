@@ -1,0 +1,31 @@
+use std::fmt::Display;
+
+use crate::helper::parsing::IntoColumns;
+
+pub fn part1(input: &str) -> impl Display {
+    let rows = input.lines().collect::<Vec<_>>();
+    let columns = input.lines().into_columns();
+    let nrows = rows.len();
+    let ncols = columns.len();
+
+    let mut visible = 0;
+
+    for (ri, r) in rows.iter().enumerate() {
+        for (ti, tree) in r.chars() {
+            if ri == 0 || ri == nrows - 1 {
+                visible += 1;
+                continue;
+            }
+            if ti == 0 || ti == ncols - 1 {
+                visible += 1;
+                continue;;
+            }
+        }
+    }
+
+    visible
+}
+
+pub fn part2(input: &str) -> impl Display {
+    ""
+}
