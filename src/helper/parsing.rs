@@ -54,6 +54,22 @@ where
     }
 }
 
+impl<'a, I> IntoColumns<&'a [u8], u8, Vec<u8>, fn(&[u8], usize) -> Option<u8>> for I
+where
+    I: Iterator<Item = &'a [u8]> + Clone,
+{
+    fn into_columns(self) -> Columns<&'a [u8], u8, Vec<u8>, Self, fn(&[u8], usize) -> Option<u8>> {
+        let min_len = self.clone().map(|s| s.len()).min().unwrap_or(0);
+        Columns {
+            iter: self,
+            indexer: |s, i| s.get(i).copied(),
+            idx: 0,
+            max: min_len,
+            phantom: PhantomData,
+        }
+    }
+}
+
 pub trait BytesAsNumber {
     /// # Safety
     ///
