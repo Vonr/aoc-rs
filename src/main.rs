@@ -1,5 +1,11 @@
 #![allow(unused)]
-use std::{collections::BTreeMap, env::args, fmt::Display, process::ExitCode, time::Instant};
+use std::{
+    collections::BTreeMap,
+    env::args,
+    fmt::Display,
+    process::ExitCode,
+    time::{Duration, Instant},
+};
 
 use aoc_driver::*;
 use aoc_rs::solutions::*;
@@ -24,9 +30,26 @@ pub fn main() -> ExitCode {
     let input = get_input_or_file(session, year, day, path).unwrap();
 
     let solution = &solutions.get(&year).unwrap()[day as usize - 1][part as usize - 1];
+    if args.contains(&"-b".to_owned()) {
+        let mut total = Duration::ZERO;
+        let duration = Duration::from_secs(3);
+        let true_start = Instant::now();
+        let mut n = 0;
+        while Instant::now().duration_since(true_start) < duration {
+            let start = Instant::now();
+            let _ = solution(&input);
+            total += Instant::now().duration_since(start);
+            n += 1;
+        }
+        println!("Average time: {:?}", total / n);
+        return ExitCode::SUCCESS;
+    }
     let start = Instant::now();
     let answer = solution(&input);
     println!("Calculated in: {:?}", Instant::now().duration_since(start));
+    if answer.is_empty() {
+        return ExitCode::SUCCESS;
+    }
     println!("Answer: {}", answer);
 
     if args.contains(&"-p".to_owned()) {

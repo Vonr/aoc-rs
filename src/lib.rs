@@ -8,6 +8,8 @@
 #![feature(unchecked_math)]
 #![feature(byte_slice_trim_ascii)]
 #![feature(portable_simd)]
+#![feature(slice_pattern)]
+#![feature(slice_split_at_unchecked)]
 #![allow(unused)]
 
 pub mod helper;

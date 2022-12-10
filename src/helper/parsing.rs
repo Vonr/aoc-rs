@@ -1,8 +1,11 @@
+use core::slice::SlicePattern;
 use std::{
     marker::PhantomData,
-    ops::{Add, AddAssign, Mul, MulAssign},
+    ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub},
     str::Lines,
 };
+
+use bstr::ByteSlice;
 
 pub struct Columns<T, U, V, I: Iterator<Item = T>, F: Fn(T, usize) -> Option<U>> {
     iter: I,
@@ -75,6 +78,14 @@ pub trait BytesAsNumber {
     ///
     /// self should be a slice of ASCII bytes of characters between b'0' and b'9'
     unsafe fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T;
+    /// # Safety
+    ///
+    /// self should be a slice of ASCII bytes of characters between b'0' and b'9' optionally with
+    /// b'-' at the start.
+    unsafe fn as_signed_num<T>(&self) -> T
+    where
+        T: From<u8> + AddAssign + MulAssign + Default,
+        T: Neg<Output = T>;
 }
 
 impl BytesAsNumber for [u8] {
@@ -85,6 +96,53 @@ impl BytesAsNumber for [u8] {
             out += (b & 0xf).into();
         }
         out
+    }
+
+    unsafe fn as_signed_num<T>(&self) -> T
+    where
+        T: From<u8> + AddAssign + MulAssign + Default,
+        T: Neg<Output = T>,
+    {
+        let mut out = T::default();
+        if self[0] == b'-' {
+            for b in &self[1..] {
+                out *= 10.into();
+                out += (b & 0xf).into();
+            }
+            -out
+        } else {
+            for b in self {
+                out *= 10.into();
+                out += (b & 0xf).into();
+            }
+            out
+        }
+    }
+}
+
+pub trait StripPrefixUnchecked<T> {
+    /// # Safety
+    ///
+    /// Caller must ensure that the length of prefix is less than the length of self
+    unsafe fn strip_prefix_unchecked<P: SlicePattern<Item = T> + ?Sized>(
+        &self,
+        prefix: &P,
+    ) -> Option<&[T]>
+    where
+        T: PartialEq;
+}
+
+impl StripPrefixUnchecked<u8> for [u8] {
+    unsafe fn strip_prefix_unchecked<P: SlicePattern<Item = u8> + ?Sized>(
+        &self,
+        prefix: &P,
+    ) -> Option<&[u8]> {
+        let prefix = prefix.as_slice();
+        let (head, tail) = self.split_at_unchecked(prefix.len());
+        if head == prefix {
+            return Some(tail);
+        }
+        None
     }
 }
 
