@@ -7,7 +7,7 @@ use bstr::io::BufReadExt;
 
 use crate::helper::parsing::BytesAsNumber;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 struct End {
     pub x: isize,
     pub y: isize,
@@ -61,6 +61,24 @@ impl End {
     pub fn right(&mut self) {
         self.x += 1;
     }
+
+    pub fn go(&mut self, dir: u8) {
+        match dir {
+            b'U' => {
+                self.up();
+            }
+            b'D' => {
+                self.down();
+            }
+            b'L' => {
+                self.left();
+            }
+            b'R' => {
+                self.right();
+            }
+            _ => (),
+        }
+    }
 }
 
 pub fn part1(input: &str) -> impl Display {
@@ -75,21 +93,7 @@ pub fn part1(input: &str) -> impl Display {
         let steps: isize = unsafe { line[2..].as_num() };
 
         for _ in 0..steps {
-            match dir {
-                b'U' => {
-                    head.up();
-                }
-                b'D' => {
-                    head.down();
-                }
-                b'L' => {
-                    head.left();
-                }
-                b'R' => {
-                    head.right();
-                }
-                _ => (),
-            }
+            head.go(dir);
             tail.towards(&head);
             visited.insert(tail.coords());
         }
@@ -102,17 +106,7 @@ pub fn part1(input: &str) -> impl Display {
 
 pub fn part2(input: &str) -> impl Display {
     let mut head = End { x: 0, y: 0 };
-    let mut tails = vec![
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-        End { x: 0, y: 0 },
-    ];
+    let mut tails: [End; 9] = Default::default();
 
     let mut visited: HashSet<(isize, isize)> = HashSet::new();
     visited.insert((0, 0));
@@ -122,21 +116,7 @@ pub fn part2(input: &str) -> impl Display {
         let steps: isize = unsafe { line[2..].as_num() };
 
         for _ in 0..steps {
-            match dir {
-                b'U' => {
-                    head.up();
-                }
-                b'D' => {
-                    head.down();
-                }
-                b'L' => {
-                    head.left();
-                }
-                b'R' => {
-                    head.right();
-                }
-                _ => (),
-            }
+            head.go(dir);
             tails[0].towards(&head);
             for j in 0..tails.len() - 1 {
                 let fst = tails[j];
