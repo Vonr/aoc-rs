@@ -41,19 +41,22 @@ pub fn main() -> ExitCode {
             total += Instant::now().duration_since(start);
             n += 1;
         }
-        println!("Average time: {:?}", total / n);
+        eprintln!("Average time: {:?}", total / n);
         return ExitCode::SUCCESS;
     }
     let start = Instant::now();
     let answer = solution(&input);
-    println!("Calculated in: {:?}", Instant::now().duration_since(start));
+    eprintln!("Calculated in: {:?}", Instant::now().duration_since(start));
     if answer.is_empty() {
         return ExitCode::SUCCESS;
     }
-    println!("Answer: {}", answer);
+    eprintln!("Answer: {}", answer);
 
     if args.contains(&"-p".to_owned()) {
-        post_answer(session, year, day, part, None::<String>, answer).unwrap();
+        if let Err(e) = post_answer(session, year, day, part, None::<String>, answer) {
+            eprintln!("{}", e);
+            return ExitCode::FAILURE;
+        }
     }
     ExitCode::SUCCESS
 }

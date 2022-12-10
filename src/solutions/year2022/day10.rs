@@ -60,7 +60,7 @@ pub fn part2(input: &str) -> impl Display {
                 idx += 1;
             }
         });
-        let stdout = std::io::stderr().lock();
+        let stdout = std::io::stdout().lock();
         let mut writer = BufWriter::with_capacity(40 * 6 + 6, stdout);
         writer.write_all(&crt);
     }
