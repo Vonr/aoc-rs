@@ -1,3 +1,6 @@
 /target
 /inputs
 .session
+/oprofile_data
+perf.data
+perf.data.old
