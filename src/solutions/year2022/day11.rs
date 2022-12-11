@@ -35,12 +35,12 @@ fn parse(input: &[u8]) -> Vec<Monkey> {
                 monkey.items.clear();
             }
             1 => {
-                for item in line.strip_prefix(b"  S").unwrap()[15..].split_str(", ") {
+                for item in line[18..].split_str(", ") {
                     monkey.items.push(unsafe { item.as_num() });
                 }
             }
             2 => {
-                let (op, mag) = line.strip_prefix(b"  O").unwrap()[20..].split_at(1);
+                let (op, mag) = line[23..].split_at(1);
                 let mag = &mag[1..];
                 match op[0] {
                     b'+' => monkey.op = Op::Add(unsafe { mag.as_num() }),
@@ -55,16 +55,10 @@ fn parse(input: &[u8]) -> Vec<Monkey> {
                 };
             }
             3 => {
-                monkey.test = unsafe { line.strip_prefix(b"  T").unwrap()[18..].as_num() };
+                monkey.test = unsafe { line[20..].as_num() };
             }
-            4 => {
-                monkey.t =
-                    unsafe { line.strip_prefix(b"    If t").unwrap()[21..].as_num::<usize>() }
-            }
-            5 => {
-                monkey.f =
-                    unsafe { line.strip_prefix(b"    If f").unwrap()[22..].as_num::<usize>() }
-            }
+            4 => monkey.t = unsafe { line[29..].as_num::<usize>() },
+            5 => monkey.f = unsafe { line[30..].as_num::<usize>() },
             _ => (),
         });
     monkeys.push(monkey);
