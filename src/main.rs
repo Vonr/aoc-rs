@@ -41,7 +41,7 @@ pub fn main() -> ExitCode {
             total += Instant::now().duration_since(start);
             n += 1;
         }
-        eprintln!("Average time: {:?}", total / n);
+        eprintln!("Average time of {} runs: {:?}", n, total / n);
         return ExitCode::SUCCESS;
     }
     let start = Instant::now();
