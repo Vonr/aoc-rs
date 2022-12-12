@@ -10,6 +10,10 @@
 #![feature(portable_simd)]
 #![feature(slice_pattern)]
 #![feature(slice_split_at_unchecked)]
+#![feature(maybe_uninit_uninit_array)]
+#![feature(maybe_uninit_array_assume_init)]
+#![allow(incomplete_features)]
+#![feature(generic_const_exprs)]
 #![allow(unused)]
 
 pub mod helper;
