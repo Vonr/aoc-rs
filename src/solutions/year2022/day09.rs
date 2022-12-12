@@ -90,7 +90,7 @@ pub fn part1(input: &str) -> impl Display {
 
     input.as_bytes().for_byte_line(|line| {
         let dir = line[0];
-        let steps: isize = unsafe { line[2..].as_num() };
+        let steps: isize = line[2..].as_num();
 
         for _ in 0..steps {
             head.go(dir);
@@ -113,7 +113,7 @@ pub fn part2(input: &str) -> impl Display {
 
     input.as_bytes().for_byte_line(|line| {
         let dir = line[0];
-        let steps: isize = unsafe { line[2..].as_num() };
+        let steps: isize = line[2..].as_num();
 
         for _ in 0..steps {
             head.go(dir);

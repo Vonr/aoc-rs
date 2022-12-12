@@ -36,29 +36,29 @@ fn parse(input: &[u8]) -> Vec<Monkey> {
             }
             1 => {
                 for item in line[18..].split_str(", ") {
-                    monkey.items.push(unsafe { item.as_num() });
+                    monkey.items.push(item.as_num());
                 }
             }
             2 => {
                 let (op, mag) = line[23..].split_at(1);
                 let mag = &mag[1..];
                 match op[0] {
-                    b'+' => monkey.op = Op::Add(unsafe { mag.as_num() }),
+                    b'+' => monkey.op = Op::Add(mag.as_num()),
                     b'*' => {
                         if mag[0] == b'o' {
                             monkey.op = Op::Sqr
                         } else {
-                            monkey.op = Op::Mul(unsafe { mag.as_num() })
+                            monkey.op = Op::Mul(mag.as_num())
                         }
                     }
                     _ => (),
                 };
             }
             3 => {
-                monkey.test = unsafe { line[20..].as_num() };
+                monkey.test = line[20..].as_num();
             }
-            4 => monkey.t = unsafe { line[29..].as_num::<usize>() },
-            5 => monkey.f = unsafe { line[30..].as_num::<usize>() },
+            4 => monkey.t = line[29..].as_num::<usize>(),
+            5 => monkey.f = line[30..].as_num::<usize>(),
             _ => (),
         });
     monkeys.push(monkey);

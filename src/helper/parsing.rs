@@ -74,22 +74,15 @@ where
 }
 
 pub trait BytesAsNumber {
-    /// # Safety
-    ///
-    /// self should be a slice of ASCII bytes of characters between b'0' and b'9'
-    unsafe fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T;
-    /// # Safety
-    ///
-    /// self should be a slice of ASCII bytes of characters between b'0' and b'9' optionally with
-    /// b'-' at the start.
-    unsafe fn as_signed_num<T>(&self) -> T
+    fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T;
+    fn as_signed_num<T>(&self) -> T
     where
         T: From<u8> + AddAssign + MulAssign + Default,
         T: Neg<Output = T>;
 }
 
 impl BytesAsNumber for [u8] {
-    unsafe fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T {
+    fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T {
         let mut out = T::default();
         for b in self {
             out *= 10.into();
@@ -98,7 +91,7 @@ impl BytesAsNumber for [u8] {
         out
     }
 
-    unsafe fn as_signed_num<T>(&self) -> T
+    fn as_signed_num<T>(&self) -> T
     where
         T: From<u8> + AddAssign + MulAssign + Default,
         T: Neg<Output = T>,
@@ -174,6 +167,6 @@ mod tests {
 
     #[test]
     pub fn ascii_as_num() {
-        assert_eq!(unsafe { b"123".as_num::<usize>() }, 123);
+        assert_eq!(b"123".as_num::<usize>(), 123);
     }
 }

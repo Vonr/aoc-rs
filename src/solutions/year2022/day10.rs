@@ -21,7 +21,7 @@ pub fn part1(input: &str) -> impl Display {
             if (cycle - 20) % 40 == 0 {
                 sum += cycle * reg;
             }
-            reg += unsafe { x[1..].as_signed_num::<i32>() };
+            reg += x[1..].as_signed_num::<i32>();
         }
         cycle += 1;
     });
