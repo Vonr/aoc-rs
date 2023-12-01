@@ -35,17 +35,16 @@ pub fn part2(input: &str) -> impl Display {
         b"one", b"two", b"three", b"four", b"five", b"six", b"seven", b"eight", b"nine",
     ];
 
-    let mut num_lines: u32 = 0;
+    let mut compensations_needed: u32 = 0;
     for line in input.lines() {
-        num_lines += 1;
         let mut first = MaybeUninit::uninit();
 
         let mut first_idx = 0;
         'outer: while first_idx < line.len() {
             let b = line[first_idx];
             if b <= b'9' {
-                let value = b - b'0';
-                first.write(value);
+                first.write(b);
+                compensations_needed += 10;
                 break;
             }
 
@@ -62,9 +61,9 @@ pub fn part2(input: &str) -> impl Display {
         'outer: for idx in (first_idx..line.len()).rev() {
             let b = line[idx];
             if b <= b'9' {
-                let value = b - b'0';
                 lsum += unsafe { first.assume_init() } as u32;
-                rsum += value as u32;
+                rsum += b as u32;
+                compensations_needed += 1;
                 break;
             }
 
@@ -82,7 +81,7 @@ pub fn part2(input: &str) -> impl Display {
         }
     }
 
-    const COMPENSATION: u32 = 11 * b'0' as u32;
+    const COMPENSATION: u32 = b'0' as u32;
 
-    lsum * 10 + rsum - num_lines * COMPENSATION
+    lsum * 10 + rsum - compensations_needed * COMPENSATION
 }
