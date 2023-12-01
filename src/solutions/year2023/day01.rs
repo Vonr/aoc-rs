@@ -49,7 +49,7 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         'outer: for idx in (first_idx..line.len()).rev() {
-            let b = unsafe { *line.get_unchecked(first_idx) };
+            let b = unsafe { *line.get_unchecked(idx) };
             if b <= b'9' {
                 let value = (b & 0xf) as usize;
                 sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
