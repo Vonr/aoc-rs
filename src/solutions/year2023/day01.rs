@@ -28,26 +28,41 @@ pub fn part2(input: &str) -> impl Display {
 
     for line in input.lines() {
         let mut first = None;
-        let mut last = None;
 
-        for idx in (0..line.len()) {
+        let mut first_idx = 0;
+        'outer: while first_idx < line.len() {
+            if line[first_idx].is_ascii_digit() {
+                let value =
+                    unsafe { NonZeroUsize::new_unchecked((line[first_idx] & 0xf) as usize) };
+                first = Some(value);
+                break;
+            }
+
             for (oidx, option) in options.iter().enumerate() {
-                if line[idx].is_ascii_digit() {
-                    let value = unsafe { NonZeroUsize::new_unchecked((line[idx] & 0xf) as usize) };
-                    last = Some(value);
-                    first.get_or_insert(value);
-                    break;
-                }
-                if line.get(idx..idx + option.len()) == Some(option) {
+                if line.get(first_idx..first_idx + option.len()) == Some(option) {
                     let value = unsafe { NonZeroUsize::new_unchecked(oidx + 1) };
-                    last = Some(value);
-                    first.get_or_insert(value);
-                    break;
+                    first = Some(value);
+                    break 'outer;
+                }
+            }
+            first_idx += 1;
+        }
+
+        'outer: for idx in (first_idx..line.len()).rev() {
+            if line[idx].is_ascii_digit() {
+                let value = (line[idx] & 0xf) as usize;
+                sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
+                break;
+            }
+
+            for (oidx, option) in options.iter().enumerate() {
+                if line.get(idx..idx + option.len()) == Some(option) {
+                    let value = oidx + 1;
+                    sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
+                    break 'outer;
                 }
             }
         }
-
-        sum += unsafe { first.unwrap_unchecked().get() * 10 + last.unwrap_unchecked().get() };
     }
 
     sum
