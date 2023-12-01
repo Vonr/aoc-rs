@@ -29,9 +29,8 @@ pub fn part2(input: &str) -> impl Display {
     let mut input = input.as_bytes();
     let mut sum: usize = 0;
 
-    let mut options: [&[u8]; 18] = [
-        b"1", b"one", b"2", b"two", b"3", b"three", b"4", b"four", b"5", b"five", b"6", b"six",
-        b"7", b"seven", b"8", b"eight", b"9", b"nine",
+    let mut options: [&[u8]; 9] = [
+        b"one", b"two", b"three", b"four", b"five", b"six", b"seven", b"eight", b"nine",
     ];
 
     for line in input.lines() {
@@ -40,8 +39,14 @@ pub fn part2(input: &str) -> impl Display {
 
         for idx in (0..line.len()) {
             for (oidx, option) in options.iter().enumerate() {
+                if line[idx].is_ascii_digit() {
+                    let value = unsafe { NonZeroUsize::new_unchecked((line[idx] & 0xf) as usize) };
+                    last = Some(value);
+                    first.get_or_insert(value);
+                    break;
+                }
                 if line.get(idx..idx + option.len()) == Some(option) {
-                    let value = unsafe { NonZeroUsize::new_unchecked((oidx >> 1) + 1) };
+                    let value = unsafe { NonZeroUsize::new_unchecked(oidx + 1) };
                     last = Some(value);
                     first.get_or_insert(value);
                     break;
