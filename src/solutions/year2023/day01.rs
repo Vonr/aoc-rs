@@ -60,7 +60,7 @@ pub fn part2(input: &str) -> impl Display {
             let mut oidx = 0;
             #[allow(clippy::explicit_counter_loop)]
             for option in options.iter() {
-                if line.get(idx..idx + option.len()) == Some(option) {
+                if line.len() - idx >= 3 && line.get(idx..idx + option.len()) == Some(option) {
                     let value = oidx + 1;
                     sum += unsafe { first.unwrap_unchecked().get() * 10 + value } as u32;
                     break 'outer;
