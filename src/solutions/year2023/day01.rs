@@ -1,5 +1,6 @@
 use std::{
     fmt::Display,
+    mem::MaybeUninit,
     num::{NonZeroU8, NonZeroUsize},
 };
 
@@ -11,9 +12,9 @@ pub fn part1(input: &str) -> impl Display {
 
     for line in input.lines() {
         let mut iter = line.iter().copied();
-        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() & 0xf };
-        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) & 0xf;
-        sum += (first * 10 + last) as u32;
+        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() };
+        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) - b'0';
+        sum += ((first - b'0') * 10 + last) as u32;
     }
 
     sum
@@ -28,21 +29,21 @@ pub fn part2(input: &str) -> impl Display {
     ];
 
     for line in input.lines() {
-        let mut first = None;
+        let mut first = MaybeUninit::uninit();
 
         let mut first_idx = 0;
         'outer: while first_idx < line.len() {
             let b = unsafe { *line.get_unchecked(first_idx) };
             if b <= b'9' {
-                let value = unsafe { NonZeroU8::new_unchecked(b - b'0') };
-                first = Some(value);
+                let value = b - b'0';
+                first.write(value);
                 break;
             }
 
             for (oidx, option) in options.iter().enumerate() {
                 if line.get(first_idx..first_idx + option.len()) == Some(option) {
-                    let value = unsafe { NonZeroU8::new_unchecked(oidx as u8 + 1) };
-                    first = Some(value);
+                    let value = oidx as u8 + 1;
+                    first.write(value);
                     break 'outer;
                 }
             }
@@ -52,8 +53,8 @@ pub fn part2(input: &str) -> impl Display {
         'outer: for idx in (first_idx..line.len()).rev() {
             let b = unsafe { *line.get_unchecked(idx) };
             if b <= b'9' {
-                let value = (b - b'0');
-                sum += unsafe { first.unwrap_unchecked().get() * 10 + value } as u32;
+                let value = b - b'0';
+                sum += unsafe { first.assume_init() * 10 + value } as u32;
                 break;
             }
 
@@ -62,7 +63,7 @@ pub fn part2(input: &str) -> impl Display {
             for option in options.iter() {
                 if line.len() - idx >= 3 && line.get(idx..idx + option.len()) == Some(option) {
                     let value = oidx + 1;
-                    sum += unsafe { first.unwrap_unchecked().get() * 10 + value } as u32;
+                    sum += unsafe { first.assume_init() * 10 + value } as u32;
                     break 'outer;
                 }
                 oidx += 1
