@@ -33,7 +33,7 @@ pub fn part2(input: &str) -> impl Display {
 
         let mut first_idx = 0;
         'outer: while first_idx < line.len() {
-            let b = unsafe { *line.get_unchecked(first_idx) };
+            let b = line[first_idx];
             if b <= b'9' {
                 let value = b - b'0';
                 first.write(value);
@@ -51,7 +51,7 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         'outer: for idx in (first_idx..line.len()).rev() {
-            let b = unsafe { *line.get_unchecked(idx) };
+            let b = line[idx];
             if b <= b'9' {
                 let value = b - b'0';
                 sum += unsafe { first.assume_init() * 10 + value } as u32;
