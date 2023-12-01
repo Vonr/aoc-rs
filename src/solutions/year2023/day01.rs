@@ -9,17 +9,10 @@ pub fn part1(input: &str) -> impl Display {
     let mut sum: u32 = 0;
 
     for line in input.lines() {
-        let mut first = None;
-        let mut last = None;
-        for &b in line.as_bytes() {
-            if b.is_ascii_digit() {
-                let value = unsafe { NonZeroU8::new_unchecked(b & 0xf) };
-                last = Some(value);
-                first.get_or_insert(value);
-            }
-        }
-        sum +=
-            unsafe { (first.unwrap_unchecked().get() * 10 + last.unwrap_unchecked().get()) as u32 };
+        let mut iter = line.bytes();
+        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() & 0xf };
+        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) & 0xf;
+        sum += (first * 10 + last) as u32;
     }
 
     sum
