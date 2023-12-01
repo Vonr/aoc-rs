@@ -31,9 +31,9 @@ pub fn part2(input: &str) -> impl Display {
 
         let mut first_idx = 0;
         'outer: while first_idx < line.len() {
-            if line[first_idx].is_ascii_digit() {
-                let value =
-                    unsafe { NonZeroUsize::new_unchecked((line[first_idx] & 0xf) as usize) };
+            let b = unsafe { *line.get_unchecked(first_idx) };
+            if b <= b'9' {
+                let value = unsafe { NonZeroUsize::new_unchecked((b & 0xf) as usize) };
                 first = Some(value);
                 break;
             }
@@ -49,8 +49,9 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         'outer: for idx in (first_idx..line.len()).rev() {
-            if line[idx].is_ascii_digit() {
-                let value = (line[idx] & 0xf) as usize;
+            let b = unsafe { *line.get_unchecked(first_idx) };
+            if b <= b'9' {
+                let value = (b & 0xf) as usize;
                 sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
                 break;
             }
