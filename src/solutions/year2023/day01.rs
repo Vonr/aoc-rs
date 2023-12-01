@@ -11,8 +11,8 @@ pub fn part1(input: &str) -> impl Display {
 
     for line in input.lines() {
         let mut iter = line.iter().copied();
-        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() - b'0' };
-        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) - b'0';
+        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() & 0xf };
+        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) & 0xf;
         sum += (first * 10 + last) as u32;
     }
 
