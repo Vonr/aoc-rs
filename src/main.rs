@@ -8,20 +8,39 @@ use std::{
 };
 
 use aoc_driver::*;
-use aoc_rs::solutions::*;
+use aoc_rs::solutions::get_solutions;
 
 #[allow(clippy::complexity)]
 pub fn main() -> ExitCode {
     let solutions = get_solutions();
-    let args = args().collect::<Vec<String>>();
-    if args.len() < 4 {
-        eprintln!("Usage: {} <year> <day> <part> [-p] [-b]", args[0]);
-        return ExitCode::FAILURE;
-    }
+    let mut args = args();
+    let binary_name = args.next().unwrap();
 
-    let year: i32 = args[1].parse().unwrap();
-    let day: i32 = args[2].parse().unwrap();
-    let part: i32 = args[3].parse().unwrap();
+    let exit = move |exit_code| {
+        eprintln!("Usage: {binary_name} <year> <day> <part> [-p] [-b]");
+        std::process::exit(exit_code);
+    };
+
+    let year: i32 = args
+        .next()
+        .unwrap_or_else(|| return exit(1))
+        .parse()
+        .unwrap();
+    let day: i32 = args
+        .next()
+        .unwrap_or_else(|| return exit(1))
+        .parse()
+        .unwrap();
+    let part: i32 = args
+        .next()
+        .unwrap_or_else(|| return exit(1))
+        .parse()
+        .unwrap();
+
+    let args = args.collect::<Vec<String>>();
+    if args.iter().any(|s| s == "-h") {
+        exit(0);
+    }
 
     let session = std::fs::read_to_string(".session").unwrap();
     let session = session.trim_end();
@@ -30,15 +49,15 @@ pub fn main() -> ExitCode {
     let input = get_input_or_file(session, year, day, path).unwrap();
 
     let solution = &solutions.get(&year).unwrap()[day as usize - 1][part as usize - 1];
-    if args.contains(&"-b".to_owned()) {
+    if args.iter().any(|s| s == "-b") {
         let mut total = Duration::ZERO;
         let duration = Duration::from_secs(3);
         let true_start = Instant::now();
         let mut n = 0;
-        while Instant::now().duration_since(true_start) < duration {
+        while true_start.elapsed() < duration {
             let start = Instant::now();
             let _ = solution(&input);
-            total += Instant::now().duration_since(start);
+            total += start.elapsed();
             n += 1;
         }
         eprintln!("Average time of {} runs: {:?}", n, total / n);
@@ -46,15 +65,15 @@ pub fn main() -> ExitCode {
     }
     let start = Instant::now();
     let answer = solution(&input);
-    eprintln!("Calculated in: {:?}", Instant::now().duration_since(start));
+    eprintln!("Calculated in: {:?}", start.elapsed());
     if answer.is_empty() {
         return ExitCode::SUCCESS;
     }
-    eprintln!("Answer: {}", answer);
+    eprintln!("Answer: {answer}");
 
-    if args.contains(&"-p".to_owned()) {
+    if args.iter().any(|s| s == "-p") {
         if let Err(e) = post_answer(session, year, day, part, None::<String>, answer) {
-            eprintln!("{}", e);
+            eprintln!("{e}");
             return ExitCode::FAILURE;
         }
     }

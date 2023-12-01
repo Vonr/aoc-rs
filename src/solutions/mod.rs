@@ -20,33 +20,6 @@ macro_rules! solutions {
             )*
             sols
         }
-
-        pub fn get_solution_names() -> BTreeMap<i32, Vec<Vec<&'static str>>> {
-            let mut sols: BTreeMap<i32, Vec<Vec<&'static str>>> = BTreeMap::new();
-            $(
-                sols.insert($years, vec![$(
-                    vec![$(
-                        stringify!($parts)
-                    ),*]
-                ),*]);
-            )*
-            sols
-        }
-
-        pub fn get_solution_tuples() -> BTreeMap<i32, Vec<Vec<(&'static str, fn())>>> {
-            let session = std::fs::read_to_string(".session").unwrap();
-            let session = session.trim_end();
-
-            let mut sols: BTreeMap<i32, Vec<Vec<(&'static str, fn())>>> = BTreeMap::new();
-            $(
-                sols.insert($years, vec![$(
-                    vec![$(
-                        (stringify!($parts), || { $parts("").to_string(); })
-                    ),*]
-                ),*]);
-            )*
-            sols
-        }
     };
 }
 
