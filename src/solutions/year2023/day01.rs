@@ -67,16 +67,15 @@ pub fn part2(input: &str) -> impl Display {
                 break;
             }
 
-            let mut oidx = 0;
+            let mut value: u32 = 1;
             #[allow(clippy::explicit_counter_loop)]
             for option in options.iter() {
                 if line.len() - idx >= 3 && line.get(idx..idx + option.len()) == Some(option) {
-                    let value = oidx + 1;
                     lsum += unsafe { first.assume_init() } as u32;
-                    rsum += value as u32;
+                    rsum += value;
                     break 'outer;
                 }
-                oidx += 1
+                value += 1
             }
         }
     }
