@@ -15,7 +15,7 @@ pub fn main() -> ExitCode {
     let solutions = get_solutions();
     let args = args().collect::<Vec<String>>();
     if args.len() < 4 {
-        eprintln!("Usage: {} <year> <day> <part> [-p]", args[0]);
+        eprintln!("Usage: {} <year> <day> <part> [-p] [-b]", args[0]);
         return ExitCode::FAILURE;
     }
 
