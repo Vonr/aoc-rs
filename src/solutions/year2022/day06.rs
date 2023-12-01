@@ -1,6 +1,6 @@
 use std::{fmt::Display, ops::Range};
 
-const unsafe fn unique<const N: usize>(arr: &[u8; N]) -> bool {
+unsafe fn unique<const N: usize>(arr: &[u8; N]) -> bool {
     let mut found = 0u32;
     let mut i = 0;
 
