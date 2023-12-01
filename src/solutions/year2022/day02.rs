@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+#[allow(clippy::identity_op)]
 pub fn part1(input: &str) -> impl Display {
     let mut score = 0;
     input.lines().for_each(|l| {

@@ -21,21 +21,9 @@ pub fn main() -> ExitCode {
         std::process::exit(exit_code);
     };
 
-    let year: i32 = args
-        .next()
-        .unwrap_or_else(|| return exit(1))
-        .parse()
-        .unwrap();
-    let day: i32 = args
-        .next()
-        .unwrap_or_else(|| return exit(1))
-        .parse()
-        .unwrap();
-    let part: i32 = args
-        .next()
-        .unwrap_or_else(|| return exit(1))
-        .parse()
-        .unwrap();
+    let year: i32 = args.next().unwrap_or_else(|| exit(1)).parse().unwrap();
+    let day: i32 = args.next().unwrap_or_else(|| exit(1)).parse().unwrap();
+    let part: i32 = args.next().unwrap_or_else(|| exit(1)).parse().unwrap();
 
     let args = args.collect::<Vec<String>>();
     if args.iter().any(|s| s == "-h") {

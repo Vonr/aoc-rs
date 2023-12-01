@@ -7,17 +7,22 @@ use std::{
 use bstr::ByteSlice;
 
 pub fn part1(input: &str) -> impl Display {
-    let mut input = input.as_bytes();
-    let mut sum: u32 = 0;
+    let input = input.as_bytes();
+    let mut sums: [u32; 2] = [0, 0];
 
+    let mut num_lines: u32 = 0;
     for line in input.lines() {
+        num_lines += 1;
         let mut iter = line.iter().copied();
         let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() };
-        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) - b'0';
-        sum += ((first - b'0') * 10 + last) as u32;
+        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first);
+        sums[0] += first as u32;
+        sums[1] += last as u32;
     }
 
-    sum
+    const COMPENSATION: u32 = 11 * b'0' as u32;
+
+    sums[0] * 10 + sums[1] - num_lines * COMPENSATION
 }
 
 pub fn part2(input: &str) -> impl Display {
