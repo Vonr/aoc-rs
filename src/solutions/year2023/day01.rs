@@ -1,4 +1,7 @@
-use std::fmt::Display;
+use std::{
+    fmt::Display,
+    num::{NonZeroU8, NonZeroUsize},
+};
 
 use bstr::ByteSlice;
 
@@ -10,12 +13,13 @@ pub fn part1(input: &str) -> impl Display {
         let mut last = None;
         for &b in line.as_bytes() {
             if b.is_ascii_digit() {
-                let value = b & 0xf;
+                let value = unsafe { NonZeroU8::new_unchecked(b & 0xf) };
                 last = Some(value);
                 first.get_or_insert(value);
             }
         }
-        sum += unsafe { (first.unwrap_unchecked() * 10 + last.unwrap_unchecked()) as u32 };
+        sum +=
+            unsafe { (first.unwrap_unchecked().get() * 10 + last.unwrap_unchecked().get()) as u32 };
     }
 
     sum
@@ -37,7 +41,7 @@ pub fn part2(input: &str) -> impl Display {
         for idx in (0..line.len()) {
             for (oidx, option) in options.iter().enumerate() {
                 if line.get(idx..idx + option.len()) == Some(option) {
-                    let value = (oidx >> 1) + 1;
+                    let value = unsafe { NonZeroUsize::new_unchecked((oidx >> 1) + 1) };
                     last = Some(value);
                     first.get_or_insert(value);
                     break;
@@ -45,7 +49,7 @@ pub fn part2(input: &str) -> impl Display {
             }
         }
 
-        sum += unsafe { first.unwrap_unchecked() * 10 + last.unwrap_unchecked() };
+        sum += unsafe { first.unwrap_unchecked().get() * 10 + last.unwrap_unchecked().get() };
     }
 
     sum
