@@ -6,10 +6,11 @@ use std::{
 use bstr::ByteSlice;
 
 pub fn part1(input: &str) -> impl Display {
+    let mut input = input.as_bytes();
     let mut sum: u32 = 0;
 
     for line in input.lines() {
-        let mut iter = line.bytes();
+        let mut iter = line.iter().copied();
         let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() & 0xf };
         let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) & 0xf;
         sum += (first * 10 + last) as u32;
