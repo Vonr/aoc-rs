@@ -11,8 +11,8 @@ pub fn part1(input: &str) -> impl Display {
 
     for line in input.lines() {
         let mut iter = line.iter().copied();
-        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() & 0xf };
-        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) & 0xf;
+        let first = unsafe { iter.find(|&b| b <= b'9').unwrap_unchecked() - b'0' };
+        let last = iter.rfind(|&b| b <= b'9').unwrap_or(first) - b'0';
         sum += (first * 10 + last) as u32;
     }
 
@@ -21,7 +21,7 @@ pub fn part1(input: &str) -> impl Display {
 
 pub fn part2(input: &str) -> impl Display {
     let mut input = input.as_bytes();
-    let mut sum: usize = 0;
+    let mut sum: u32 = 0;
 
     let mut options: [&[u8]; 9] = [
         b"one", b"two", b"three", b"four", b"five", b"six", b"seven", b"eight", b"nine",
@@ -34,14 +34,14 @@ pub fn part2(input: &str) -> impl Display {
         'outer: while first_idx < line.len() {
             let b = unsafe { *line.get_unchecked(first_idx) };
             if b <= b'9' {
-                let value = unsafe { NonZeroUsize::new_unchecked((b & 0xf) as usize) };
+                let value = unsafe { NonZeroU8::new_unchecked(b - b'0') };
                 first = Some(value);
                 break;
             }
 
             for (oidx, option) in options.iter().enumerate() {
                 if line.get(first_idx..first_idx + option.len()) == Some(option) {
-                    let value = unsafe { NonZeroUsize::new_unchecked(oidx + 1) };
+                    let value = unsafe { NonZeroU8::new_unchecked(oidx as u8 + 1) };
                     first = Some(value);
                     break 'outer;
                 }
@@ -52,17 +52,20 @@ pub fn part2(input: &str) -> impl Display {
         'outer: for idx in (first_idx..line.len()).rev() {
             let b = unsafe { *line.get_unchecked(idx) };
             if b <= b'9' {
-                let value = (b & 0xf) as usize;
-                sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
+                let value = (b - b'0');
+                sum += unsafe { first.unwrap_unchecked().get() * 10 + value } as u32;
                 break;
             }
 
-            for (oidx, option) in options.iter().enumerate() {
+            let mut oidx = 0;
+            #[allow(clippy::explicit_counter_loop)]
+            for option in options.iter() {
                 if line.get(idx..idx + option.len()) == Some(option) {
                     let value = oidx + 1;
-                    sum += unsafe { first.unwrap_unchecked().get() * 10 + value };
+                    sum += unsafe { first.unwrap_unchecked().get() * 10 + value } as u32;
                     break 'outer;
                 }
+                oidx += 1
             }
         }
     }
