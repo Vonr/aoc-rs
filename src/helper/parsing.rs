@@ -137,11 +137,27 @@ impl StripPrefixUnchecked<u8> for [u8] {
 }
 
 pub trait PartialConsume<T> {
+    fn next(self: &mut &Self) -> T;
+    fn skip_n(self: &mut &Self, n: usize) -> &[T];
     fn skip_to_unit<'l, 'r: 'l>(self: &mut &'r Self, unit: T) -> &'l [T];
     fn skip_to_group<'l, 'r: 'l>(self: &mut &'r Self, group: impl AsRef<[T]>) -> &'l [T];
 }
 
 impl PartialConsume<u8> for [u8] {
+    #[inline]
+    fn next(self: &mut &Self) -> u8 {
+        let l = self[0];
+        *self = &self[1..];
+        l
+    }
+
+    #[inline]
+    fn skip_n(self: &mut &Self, n: usize) -> &[u8] {
+        let (l, r) = self.split_at(n.min(self.len().saturating_sub(1)));
+        *self = &r[1..];
+        l
+    }
+
     #[inline]
     fn skip_to_unit<'l, 'r: 'l>(self: &mut &'r Self, unit: u8) -> &'l [u8] {
         let idx = self.find_byte(unit);

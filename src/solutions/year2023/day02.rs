@@ -23,11 +23,19 @@ pub fn part1(input: &str) -> impl Display {
                 sets.skip_to_unit(b' ');
 
                 let num = set.skip_to_unit(b' ');
-                let ty = set.skip_to_unit(b' ');
-                let ty = match ty[0] {
-                    b'r' => 0,
-                    b'g' => 1,
-                    b'b' => 2,
+                let ty = match set.next() {
+                    b'r' => {
+                        set.skip_n(3);
+                        0
+                    }
+                    b'g' => {
+                        set.skip_n(5);
+                        1
+                    }
+                    b'b' => {
+                        set.skip_n(4);
+                        2
+                    }
                     _ => unsafe { unreachable_unchecked() },
                 };
 
@@ -58,12 +66,20 @@ pub fn part2(input: &str) -> impl Display {
         let mut mins: [u32; 3] = [0; 3];
         while !line.is_empty() {
             let num = line.skip_to_unit(b' ');
-            let ty = line.skip_to_unit(b' ');
 
-            let ty = match ty[0] {
-                b'r' => 0,
-                b'g' => 1,
-                b'b' => 2,
+            let ty = match line.next() {
+                b'r' => {
+                    line.skip_n(3);
+                    0
+                }
+                b'g' => {
+                    line.skip_n(5);
+                    1
+                }
+                b'b' => {
+                    line.skip_n(4);
+                    2
+                }
                 _ => unsafe { unreachable_unchecked() },
             };
 
