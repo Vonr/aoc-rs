@@ -19,7 +19,3 @@ default-features = false
 version = "1.8.0"
 default-features = false
 features = ["std"]
-
-[[bench]]
-name = "benches"
-harness = false

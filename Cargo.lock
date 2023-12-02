@@ -14,7 +14,6 @@ version = "0.1.0"
 dependencies = [
  "aoc_driver",
  "bstr",
- "iai",
  "nom",
  "nom-supreme",
  "once_cell",
@@ -23,8 +22,9 @@ dependencies = [
 
 [[package]]
 name = "aoc_driver"
-version = "0.3.5"
-source = "git+https://github.com/Vonr/aoc_driver?rev=a88a157#a88a157df7afa0552d9b0327355f7080f64b300d"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70a15bef9dd5bbd310de970293148c4914cd6ae78f7e308eb68ca2afc7bc1099"
 dependencies = [
  "thiserror",
  "ureq",
@@ -150,12 +150,6 @@ name = "hashbrown"
 version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "290f1a1d9242c78d09ce40a5e87e7554ee637af1351968159f4952f028f75604"
-
-[[package]]
-name = "iai"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71a816c97c42258aa5834d07590b718b4c9a598944cd39a52dc25b351185d678"
 
 [[package]]
 name = "idna"
