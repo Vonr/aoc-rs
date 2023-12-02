@@ -74,39 +74,36 @@ where
 }
 
 pub trait BytesAsNumber {
-    fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T;
+    fn as_num<T: From<u8> + Add<Output = T> + Mul<Output = T> + Default>(&self) -> T;
     fn as_signed_num<T>(&self) -> T
     where
-        T: From<u8> + AddAssign + MulAssign + Default,
+        T: From<u8> + Add<Output = T> + Mul<Output = T> + Default,
         T: Neg<Output = T>;
 }
 
 impl BytesAsNumber for [u8] {
-    fn as_num<T: From<u8> + AddAssign + MulAssign + Default>(&self) -> T {
+    fn as_num<T: From<u8> + Add<Output = T> + Mul<Output = T> + Default>(&self) -> T {
         let mut out = T::default();
         for b in self {
-            out *= 10.into();
-            out += (b & 0xf).into();
+            out = out * T::from(10) + T::from(b & 0xf);
         }
         out
     }
 
     fn as_signed_num<T>(&self) -> T
     where
-        T: From<u8> + AddAssign + MulAssign + Default,
+        T: From<u8> + Add<Output = T> + Mul<Output = T> + Default,
         T: Neg<Output = T>,
     {
         let mut out = T::default();
         if self[0] == b'-' {
             for b in &self[1..] {
-                out *= 10.into();
-                out += (b & 0xf).into();
+                out = out * T::from(10) + T::from(b & 0xf);
             }
             -out
         } else {
             for b in self {
-                out *= 10.into();
-                out += (b & 0xf).into();
+                out = out * T::from(10) + T::from(b & 0xf);
             }
             out
         }
