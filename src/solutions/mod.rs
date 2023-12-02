@@ -6,11 +6,26 @@ pub mod year2023;
 
 macro_rules! solutions {
     {$($years:expr => [$([$($parts:expr),*]),*$(,)?]),*$(,)?} => {
-        pub fn get_solutions() -> BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str) -> String>>>> {
+        pub fn solutions() -> BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str) -> String>>>> {
             fn translate<D: Display + 'static>(f: fn(&str) -> D) -> Box<dyn Fn(&str) -> String> {
                 Box::new(move |x| f(x).to_string())
             }
             let mut sols: BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str) -> String>>>> = BTreeMap::new();
+            $(
+                sols.insert($years, vec![$(
+                    vec![$(
+                        translate($parts)
+                    ),*]
+                ),*]);
+            )*
+            sols
+        }
+
+        pub fn stubs() -> BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str)>>>> {
+            fn translate<D: Display + 'static>(f: fn(&str) -> D) -> Box<dyn Fn(&str)> {
+                Box::new(move |x| { ::std::hint::black_box(f(x)); })
+            }
+            let mut sols: BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str)>>>> = BTreeMap::new();
             $(
                 sols.insert($years, vec![$(
                     vec![$(

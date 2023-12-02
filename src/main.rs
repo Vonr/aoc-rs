@@ -8,11 +8,10 @@ use std::{
 };
 
 use aoc_driver::*;
-use aoc_rs::solutions::get_solutions;
+use aoc_rs::solutions::{solutions, stubs};
 
 #[allow(clippy::complexity)]
 pub fn main() -> ExitCode {
-    let solutions = get_solutions();
     let mut args = args();
     let binary_name = args.next().unwrap();
 
@@ -36,21 +35,26 @@ pub fn main() -> ExitCode {
     let path = format!("inputs/{}/{}.txt", year, day);
     let input = get_input_or_file(session, year, day, path).unwrap();
 
-    let solution = &solutions.get(&year).unwrap()[day as usize - 1][part as usize - 1];
     if args.iter().any(|s| s == "-b") {
+        let stubs = stubs();
+        let stub = &stubs.get(&year).unwrap()[day as usize - 1][part as usize - 1];
+
         let mut total = Duration::ZERO;
         let duration = Duration::from_secs(3);
         let true_start = Instant::now();
         let mut n = 0;
         while true_start.elapsed() < duration {
             let start = Instant::now();
-            let _ = solution(&input);
+            stub(&input);
             total += start.elapsed();
             n += 1;
         }
         eprintln!("Average time of {} runs: {:?}", n, total / n);
         return ExitCode::SUCCESS;
     }
+
+    let solutions = solutions();
+    let solution = &solutions.get(&year).unwrap()[day as usize - 1][part as usize - 1];
     let start = Instant::now();
     let answer = solution(&input);
     eprintln!("Calculated in: {:?}", start.elapsed());

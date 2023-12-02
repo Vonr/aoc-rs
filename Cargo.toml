@@ -12,17 +12,13 @@ once_cell = "1.18.0"
 pathfinding = "4.4.0"
 
 [dependencies.aoc_driver]
-git = "https://github.com/Vonr/aoc_driver"
-rev = "a88a157"
+version = "0.3.6"
 default-features = false
 
 [dependencies.bstr]
 version = "1.8.0"
 default-features = false
 features = ["std"]
-
-[dev-dependencies]
-iai = "0.1.1"
 
 [[bench]]
 name = "benches"
