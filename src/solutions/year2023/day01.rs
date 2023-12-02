@@ -27,60 +27,61 @@ pub fn part1(input: &str) -> impl Display {
 }
 
 pub fn part2(input: &str) -> impl Display {
-    let mut input = input.as_bytes();
-    let mut lsum: u32 = 0;
-    let mut rsum: u32 = 0;
-
-    let mut options: [&[u8]; 9] = [
+    const OPTIONS: [&[u8]; 9] = [
         b"one", b"two", b"three", b"four", b"five", b"six", b"seven", b"eight", b"nine",
     ];
 
-    let mut compensations_needed: u32 = 0;
-    for line in input.lines() {
-        let mut first = MaybeUninit::uninit();
+    let input = input.as_bytes();
+    let mut lsum = 0;
+    let mut rsum = 0;
+    let mut lines = 0;
 
-        let mut first_idx = 0;
-        'outer: while first_idx < line.len() {
-            let b = line[first_idx];
-            if b <= b'9' {
-                first.write(b);
-                compensations_needed += 10;
+    for mut line in input.lines() {
+        let mut first = b'0';
+        while !line.is_empty() {
+            if line[0] <= b'9' {
+                first = line[0];
+                line = &line[1..];
                 break;
             }
 
-            for (oidx, option) in options.iter().enumerate() {
-                if line.get(first_idx..first_idx + option.len()) == Some(option) {
-                    let value = oidx as u8 + 1;
-                    first.write(value);
-                    break 'outer;
+            if line.len() >= 3 {
+                if let Some(val) = OPTIONS
+                    .iter()
+                    .position(|&opt| line.len() >= opt.len() && line[..opt.len()] == *opt)
+                {
+                    first = val as u8 + b'1';
+                    break;
                 }
             }
-            first_idx += 1;
+
+            line = &line[1..];
         }
 
-        'outer: for idx in (first_idx..line.len()).rev() {
-            let b = line[idx];
-            if b <= b'9' {
-                lsum += unsafe { first.assume_init() } as u32;
-                rsum += b as u32;
-                compensations_needed += 1;
+        let mut last = first;
+        while !line.is_empty() {
+            let last_idx = line.len() - 1;
+            if line[last_idx] <= b'9' {
+                last = line[last_idx];
                 break;
             }
 
-            let mut value: u32 = 1;
-            #[allow(clippy::explicit_counter_loop)]
-            for option in options.iter() {
-                if line.len() - idx >= 3 && line.get(idx..idx + option.len()) == Some(option) {
-                    lsum += unsafe { first.assume_init() } as u32;
-                    rsum += value;
-                    break 'outer;
+            if line.len() >= 3 {
+                if let Some(val) = OPTIONS.iter().position(|&opt| line.ends_with(opt)) {
+                    last = val as u8 + b'1';
+                    break;
                 }
-                value += 1
             }
+
+            line = &line[..last_idx];
         }
+
+        lsum += first as u32;
+        rsum += last as u32;
+        lines += 1;
     }
 
-    const COMPENSATION: u32 = b'0' as u32;
+    const COMPENSATION: u32 = 11 * b'0' as u32;
 
-    lsum * 10 + rsum - compensations_needed * COMPENSATION
+    lsum * 10 + rsum - lines * COMPENSATION
 }

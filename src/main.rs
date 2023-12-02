@@ -3,6 +3,7 @@ use std::{
     collections::BTreeMap,
     env::args,
     fmt::Display,
+    hint::black_box,
     process::ExitCode,
     time::{Duration, Instant},
 };
@@ -39,13 +40,21 @@ pub fn main() -> ExitCode {
         let stubs = stubs();
         let stub = &stubs.get(&year).unwrap()[day as usize - 1][part as usize - 1];
 
+        eprintln!("Warming up...");
+        const WARMUP: Duration = Duration::from_secs(2);
+        let warmup_start = Instant::now();
+        while warmup_start.elapsed() < WARMUP {
+            black_box(stub(&input));
+        }
+
+        eprintln!("Starting benchmark");
+        const DURATION: Duration = Duration::from_secs(3);
         let mut total = Duration::ZERO;
-        let duration = Duration::from_secs(3);
         let true_start = Instant::now();
         let mut n = 0;
-        while true_start.elapsed() < duration {
+        while true_start.elapsed() < DURATION {
             let start = Instant::now();
-            stub(&input);
+            black_box(stub(&input));
             total += start.elapsed();
             n += 1;
         }
