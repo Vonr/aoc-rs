@@ -46,10 +46,7 @@ pub fn part2(input: &str) -> impl Display {
             }
 
             if line.len() >= 3 {
-                if let Some(val) = OPTIONS
-                    .iter()
-                    .position(|&opt| line.len() >= opt.len() && line[..opt.len()] == *opt)
-                {
+                if let Some(val) = OPTIONS.iter().position(|&opt| line.starts_with(opt)) {
                     first = val as u8 + b'1';
                     break;
                 }

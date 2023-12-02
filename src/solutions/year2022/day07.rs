@@ -111,7 +111,7 @@ fn get_sizes(input: &str) -> HashMap<Vec<u8>, usize> {
     let mut size: usize = 0;
     let mut i = 0;
 
-    input.as_bytes().for_byte_line(|line| {
+    for (i, line) in input.as_bytes().lines().enumerate() {
         if line[0] == b'$' {
             if len != 0 {
                 sizes
@@ -152,9 +152,8 @@ fn get_sizes(input: &str) -> HashMap<Vec<u8>, usize> {
         } else if line[0] >= b'0' && line[0] <= b'9' {
             size += unsafe { as_usize(&line[..line.find_byte(b' ').unwrap()]) };
         }
-        i += 1;
-        Ok(true)
-    });
+    }
+
     sizes
 }
 

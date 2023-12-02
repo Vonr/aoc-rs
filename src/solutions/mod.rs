@@ -6,14 +6,14 @@ pub mod year2023;
 
 macro_rules! solutions {
     {$($years:expr => [$([$($parts:expr),*]),*$(,)?]),*$(,)?} => {
-        pub fn solutions() -> BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str) -> String>>>> {
+        pub fn solutions() -> BTreeMap<i32, [[Box<dyn Fn(&str) -> String>; 2]; 25]> {
             fn translate<D: Display + 'static>(f: fn(&str) -> D) -> Box<dyn Fn(&str) -> String> {
                 Box::new(move |x| f(x).to_string())
             }
-            let mut sols: BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str) -> String>>>> = BTreeMap::new();
+            let mut sols = BTreeMap::new();
             $(
-                sols.insert($years, vec![$(
-                    vec![$(
+                sols.insert($years, [$(
+                    [$(
                         translate($parts)
                     ),*]
                 ),*]);
@@ -21,14 +21,14 @@ macro_rules! solutions {
             sols
         }
 
-        pub fn stubs() -> BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str)>>>> {
+        pub fn stubs() -> BTreeMap<i32, [[Box<dyn Fn(&str)>; 2]; 25]> {
             fn translate<D: Display + 'static>(f: fn(&str) -> D) -> Box<dyn Fn(&str)> {
                 Box::new(move |x| { ::std::hint::black_box(f(x)); })
             }
-            let mut sols: BTreeMap<i32, Vec<Vec<Box<dyn Fn(&str)>>>> = BTreeMap::new();
+            let mut sols = BTreeMap::new();
             $(
-                sols.insert($years, vec![$(
-                    vec![$(
+                sols.insert($years, [$(
+                    [$(
                         translate($parts)
                     ),*]
                 ),*]);

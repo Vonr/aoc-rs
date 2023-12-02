@@ -1,0 +1,1147 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.2013675' (creator: callgrind-3.21.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 230747293
+Trigger: Program termination
+Profiled target:  target/release-with-debug/aoc-rs 2023 2 1 -b (PID 2013675, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                     
+--------------------------------------------------------------------------------
+1,169,997,383 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                    file:function
+--------------------------------------------------------------------------------
+153,321,028 (13.10%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 95,593,736 ( 8.17%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs:memchr::memmem::searcher::searcher_kind_avx2 [/home/qther/dev/rs/aoc-rs/target/release-with-debug/aoc-rs]
+ 79,292,086 ( 6.78%)  /usr/src/debug/glibc/glibc/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms [/usr/lib/libc.so.6]
+ 60,992,750 ( 5.21%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bstr-1.8.0/src/ext_slice.rs:bstr::ext_slice::Find::new [/home/qther/dev/rs/aoc-rs/target/release-with-debug/aoc-rs]
+ 60,794,356 ( 5.20%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/memchr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2
+ 60,059,762 ( 5.13%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/memchr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2
+ 50,333,094 ( 4.30%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bstr-1.8.0/src/ext_slice.rs:aoc_rs::solutions::year2023::day02::part1
+ 48,960,422 ( 4.18%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/num/mod.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 40,727,071 ( 3.48%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/packedpair.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 39,877,194 ( 3.41%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/index.rs:aoc_rs::solutions::year2023::day02::part1
+ 39,126,514 ( 3.34%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/mod.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 38,346,343 ( 3.28%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/mod.rs:aoc_rs::solutions::year2023::day02::part1
+ 37,777,971 ( 3.23%)  src/solutions/year2023/day02.rs:aoc_rs::solutions::year2023::day02::part1 [/home/qther/dev/rs/aoc-rs/target/release-with-debug/aoc-rs]
+ 33,314,106 ( 2.85%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/mod.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 30,968,231 ( 2.65%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/iter/macros.rs:aoc_rs::solutions::year2023::day02::part1
+ 28,558,012 ( 2.44%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/const_ptr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2
+ 25,482,905 ( 2.18%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2 [/home/qther/dev/rs/aoc-rs/target/release-with-debug/aoc-rs]
+ 20,450,668 ( 1.75%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs:aoc_rs::solutions::year2023::day02::part1
+ 19,469,422 ( 1.66%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/const_ptr.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 18,297,825 ( 1.56%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs:bstr::ext_slice::Find::new
+ 15,289,743 ( 1.31%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs:aoc_rs::solutions::year2023::day02::part1
+ 15,150,331 ( 1.29%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/const_ptr.rs:aoc_rs::solutions::year2023::day02::part1
+ 12,737,431 ( 1.09%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/packedpair.rs:memchr::memmem::searcher::searcher_kind_avx2
+ 11,260,200 ( 0.96%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ops/arith.rs:aoc_rs::solutions::year2023::day02::part1
+ 10,539,011 ( 0.90%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/option.rs:aoc_rs::solutions::year2023::day02::part1
+  9,758,840 ( 0.83%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/packedpair.rs:bstr::ext_slice::Find::new
+  8,538,985 ( 0.73%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/cmp.rs:bstr::ext_slice::Find::new
+  8,538,985 ( 0.73%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/iter/adapters/take.rs:bstr::ext_slice::Find::new
+  7,938,441 ( 0.68%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/mod.rs:memchr::arch::all::rabinkarp::is_equal_raw
+  5,630,100 ( 0.48%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ops/bit.rs:aoc_rs::solutions::year2023::day02::part1
+  5,624,738 ( 0.48%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/non_null.rs:aoc_rs::solutions::year2023::day02::part1
+  5,096,581 ( 0.44%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/memchr.rs:aoc_rs::solutions::year2023::day02::part1
+  5,096,581 ( 0.44%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/sync/atomic.rs:aoc_rs::solutions::year2023::day02::part1
+  4,879,420 ( 0.42%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/packedpair/mod.rs:bstr::ext_slice::Find::new
+  4,879,420 ( 0.42%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/simd.rs:bstr::ext_slice::Find::new
+  4,879,420 ( 0.42%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/convert/num.rs:bstr::ext_slice::Find::new
+  4,825,800 ( 0.41%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/mod.rs:aoc_rs::solutions::year2023::day02::part1
+  4,627,406 ( 0.40%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/cmp.rs:aoc_rs::solutions::year2023::day02::part1
+  4,504,080 ( 0.38%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/x86/sse2.rs:memchr::memmem::searcher::searcher_kind_avx2
+  4,375,392 ( 0.37%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/cow.rs:aoc_rs::solutions::year2023::day02::part1
+  4,085,844 ( 0.35%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/x86/avx2.rs:memchr::memmem::searcher::searcher_kind_avx2
+  3,938,389 ( 0.34%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/x86/avx2.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2
+  3,825,787 ( 0.33%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/mod.rs:aoc_rs::solutions::year2023::day02::part1
+  2,646,147 ( 0.23%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs:memchr::arch::all::rabinkarp::is_equal_raw [/home/qther/dev/rs/aoc-rs/target/release-with-debug/aoc-rs]
+  2,592,527 ( 0.22%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/vector.rs:memchr::memmem::searcher::searcher_kind_avx2
+  2,439,710 ( 0.21%)  /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs:bstr::ext_slice::Find::new
+  2,439,710 ( 0.21%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/iter/macros.rs:bstr::ext_slice::Find::new
+  1,707,797 ( 0.15%)  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/intrinsics.rs:memchr::memmem::searcher::searcher_kind_avx2
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/mod.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 270 ----------------------------------------
+         .               }
+         .           }
+         .           
+         .           impl<'h, 'n> Iterator for FindIter<'h, 'n> {
+         .               type Item = usize;
+         .           
+         .               fn next(&mut self) -> Option<usize> {
+         .                   let needle = self.finder.needle();
+21,876,960 ( 1.87%)          let haystack = self.haystack.get(self.pos..)?;
+         .                   let idx =
+ 5,152,882 ( 0.44%)              self.finder.searcher.find(&mut self.prestate, haystack, needle)?;
+         .           
+ 2,313,703 ( 0.20%)          let pos = self.pos + idx;
+ 4,627,406 ( 0.40%)          self.pos = pos + needle.len().max(1);
+         .           
+         .                   Some(pos)
+         .               }
+         .           
+         .               fn size_hint(&self) -> (usize, Option<usize>) {
+         .                   // The largest possible number of non-overlapping matches is the
+         .                   // quotient of the haystack and the needle (or the length of the
+         .                   // haystack, if the needle is empty)
+-- line 291 ----------------------------------------
+
+ 4,375,392 ( 0.37%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/mod.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/memchr.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 157 ----------------------------------------
+         .                       len >= V::BYTES,
+         .                       "haystack has length {}, but must be at least {}",
+         .                       len,
+         .                       V::BYTES
+         .                   );
+         .           
+         .                   // Search a possibly unaligned chunk at `start`. This covers any part
+         .                   // of the haystack prior to where aligned loads can start.
+   268,100 ( 0.02%)          if let Some(cur) = self.search_chunk(start, topos) {
+         .                       return Some(cur);
+         .                   }
+         .                   // Set `cur` to the first V-aligned pointer greater than `start`.
+         .                   let mut cur = start.add(V::BYTES - (start.as_usize() & V::ALIGN));
+         .                   debug_assert!(cur > start && end.sub(V::BYTES) >= start);
+   536,200 ( 0.05%)          if len >= Self::LOOP_SIZE {
+   659,526 ( 0.06%)              while cur <= end.sub(Self::LOOP_SIZE) {
+         .                           debug_assert_eq!(0, cur.as_usize() % V::BYTES);
+         .           
+         .                           let a = V::load_aligned(cur);
+         .                           let b = V::load_aligned(cur.add(1 * V::BYTES));
+         .                           let c = V::load_aligned(cur.add(2 * V::BYTES));
+         .                           let d = V::load_aligned(cur.add(3 * V::BYTES));
+         .                           let eqa = self.v1.cmpeq(a);
+         .                           let eqb = self.v1.cmpeq(b);
+         .                           let eqc = self.v1.cmpeq(c);
+         .                           let eqd = self.v1.cmpeq(d);
+         .                           let or1 = eqa.or(eqb);
+         .                           let or2 = eqc.or(eqd);
+         .                           let or3 = or1.or(or2);
+ 1,093,848 ( 0.09%)                  if or3.movemask_will_have_non_zero() {
+         .                               let mask = eqa.movemask();
+   265,419 ( 0.02%)                      if mask.has_non_zero() {
+         .                                   return Some(cur.add(topos(mask)));
+         .                               }
+         .           
+         .                               let mask = eqb.movemask();
+   230,566 ( 0.02%)                      if mask.has_non_zero() {
+         .                                   return Some(cur.add(1 * V::BYTES).add(topos(mask)));
+         .                               }
+         .           
+         .                               let mask = eqc.movemask();
+   171,584 ( 0.01%)                      if mask.has_non_zero() {
+         .                                   return Some(cur.add(2 * V::BYTES).add(topos(mask)));
+         .                               }
+         .           
+         .                               let mask = eqd.movemask();
+         .                               debug_assert!(mask.has_non_zero());
+         .                               return Some(cur.add(3 * V::BYTES).add(topos(mask)));
+         .                           }
+         .                           cur = cur.add(Self::LOOP_SIZE);
+         .                       }
+         .                   }
+         .                   // Handle any leftovers after the aligned loop above. We use unaligned
+         .                   // loads here, but I believe we are guaranteed that they are aligned
+         .                   // since `cur` is aligned.
+    18,767 ( 0.00%)          while cur <= end.sub(V::BYTES) {
+         .                       debug_assert!(end.distance(cur) >= V::BYTES);
+     5,362 ( 0.00%)              if let Some(cur) = self.search_chunk(cur, topos) {
+         .                           return Some(cur);
+         .                       }
+         .                       cur = cur.add(V::BYTES);
+         .                   }
+         .                   // Finally handle any remaining bytes less than the size of V. In this
+         .                   // case, our pointer may indeed be unaligned and the load may overlap
+         .                   // with the previous one. But that's okay since we know the previous
+         .                   // load didn't lead to a match (otherwise we wouldn't be here).
+     5,362 ( 0.00%)          if cur < end {
+         .                       debug_assert!(end.distance(cur) < V::BYTES);
+         .                       cur = cur.sub(V::BYTES - end.distance(cur));
+         .                       debug_assert_eq!(end.distance(cur), V::BYTES);
+         .                       return self.search_chunk(cur, topos);
+         .                   }
+         .                   None
+         .               }
+         .           
+-- line 231 ----------------------------------------
+-- line 415 ----------------------------------------
+         .               #[inline(always)]
+         .               unsafe fn search_chunk(
+         .                   &self,
+         .                   cur: *const u8,
+         .                   mask_to_offset: impl Fn(V::Mask) -> usize,
+         .               ) -> Option<*const u8> {
+         .                   let chunk = V::load_unaligned(cur);
+         .                   let mask = self.v1.cmpeq(chunk).movemask();
+     5,362 ( 0.00%)          if mask.has_non_zero() {
+         .                       Some(cur.add(mask_to_offset(mask)))
+         .                   } else {
+         .                       None
+         .                   }
+         .               }
+         .           }
+         .           
+         .           /// Finds all occurrences of two bytes in a haystack.
+-- line 431 ----------------------------------------
+-- line 1126 ----------------------------------------
+         .               haystack: &[u8],
+         .               mut find_raw: impl FnMut(*const u8, *const u8) -> Option<*const u8>,
+         .           ) -> Option<usize> {
+         .               // SAFETY: We rely on `find_raw` to return a correct and valid pointer, but
+         .               // otherwise, `start` and `end` are valid due to the guarantees provided by
+         .               // a &[u8].
+         .               let start = haystack.as_ptr();
+         .               let end = start.add(haystack.len());
+ 5,096,581 ( 0.44%)      let found = find_raw(start, end)?;
+         .               Some(found.distance(start))
+         .           }
+         .           
+         .           /// Performs a forward byte-at-a-time loop until either `ptr >= end_ptr` or
+         .           /// until `confirm(*ptr)` returns `true`. If the former occurs, then `None` is
+         .           /// returned. If the latter occurs, then the pointer at which `confirm` returns
+         .           /// `true` is returned.
+         .           ///
+-- line 1142 ----------------------------------------
+-- line 1147 ----------------------------------------
+         .           #[inline(always)]
+         .           pub(crate) unsafe fn fwd_byte_by_byte<F: Fn(u8) -> bool>(
+         .               start: *const u8,
+         .               end: *const u8,
+         .               confirm: F,
+         .           ) -> Option<*const u8> {
+         .               debug_assert!(start <= end);
+         .               let mut ptr = start;
+34,584,900 ( 2.96%)      while ptr < end {
+14,879,550 ( 1.27%)          if confirm(*ptr) {
+         .                       return Some(ptr);
+         .                   }
+         .                   ptr = ptr.offset(1);
+         .               }
+         .               None
+         .           }
+         .           
+         .           /// Performs a reverse byte-at-a-time loop until either `ptr < start_ptr` or
+-- line 1164 ----------------------------------------
+
+ 8,069,810 ( 0.69%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/memchr.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/vector.rs
+--------------------------------------------------------------------------------
+Ir                 
+
+-- line 141 ----------------------------------------
+        .               #[inline(always)]
+        .               fn all_zeros_except_least_significant(n: usize) -> SensibleMoveMask {
+        .                   debug_assert!(n < 32);
+        .                   SensibleMoveMask(!((1 << n) - 1))
+        .               }
+        .           
+        .               #[inline(always)]
+        .               fn has_non_zero(self) -> bool {
+3,391,465 ( 0.29%)          self.0 != 0
+        .               }
+        .           
+        .               #[inline(always)]
+        .               fn count_ones(self) -> usize {
+        .                   self.0.count_ones() as usize
+        .               }
+        .           
+        .               #[inline(always)]
+        .               fn and(self, other: SensibleMoveMask) -> SensibleMoveMask {
+  445,046 ( 0.04%)          SensibleMoveMask(self.0 & other.0)
+        .               }
+        .           
+        .               #[inline(always)]
+        .               fn or(self, other: SensibleMoveMask) -> SensibleMoveMask {
+        .                   SensibleMoveMask(self.0 | other.0)
+        .               }
+        .           
+        .               #[inline(always)]
+-- line 167 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/packedpair/mod.rs
+--------------------------------------------------------------------------------
+Ir                 
+
+-- line 167 ----------------------------------------
+        .                   if needle.len() <= 1 {
+        .                       return None;
+        .                   }
+        .                   // Find the rarest two bytes. We make them distinct indices by
+        .                   // construction. (The actual byte value may be the same in degenerate
+        .                   // cases, but that's OK.)
+        .                   let (mut rare1, mut index1) = (needle[0], 0);
+        .                   let (mut rare2, mut index2) = (needle[1], 1);
+2,439,710 ( 0.21%)          if ranker.rank(rare2) < ranker.rank(rare1) {
+        .                       core::mem::swap(&mut rare1, &mut rare2);
+        .                       core::mem::swap(&mut index1, &mut index2);
+        .                   }
+        .                   let max = usize::from(core::u8::MAX);
+        .                   for (i, &b) in needle.iter().enumerate().take(max).skip(2) {
+        .                       if ranker.rank(b) < ranker.rank(rare1) {
+        .                           rare2 = rare1;
+        .                           index2 = index1;
+-- line 183 ----------------------------------------
+-- line 231 ----------------------------------------
+        .                       return None;
+        .                   }
+        .                   Some(Pair { index1, index2 })
+        .               }
+        .           
+        .               /// Returns the first offset of the pair.
+        .               #[inline]
+        .               pub fn index1(&self) -> u8 {
+  222,523 ( 0.02%)          self.index1
+        .               }
+        .           
+        .               /// Returns the second offset of the pair.
+        .               #[inline]
+        .               pub fn index2(&self) -> u8 {
+  222,523 ( 0.02%)          self.index2
+        .               }
+        .           }
+        .           
+        .           /// This trait allows the user to customize the heuristic used to determine the
+        .           /// relative frequency of a given byte in the dataset being searched.
+        .           ///
+        .           /// The use of this trait can have a dramatic impact on performance depending
+        .           /// on the type of data being searched. The details of why are explained in the
+-- line 253 ----------------------------------------
+-- line 317 ----------------------------------------
+        .               fn rank(&self, byte: u8) -> u8;
+        .           }
+        .           
+        .           /// The default byte frequency heuristic that is good for most haystacks.
+        .           pub(crate) struct DefaultFrequencyRank;
+        .           
+        .           impl HeuristicFrequencyRank for DefaultFrequencyRank {
+        .               fn rank(&self, byte: u8) -> u8 {
+2,439,710 ( 0.21%)          self::default_rank::RANK[usize::from(byte)]
+        .               }
+        .           }
+        .           
+        .           /// This permits passing any implementation of `HeuristicFrequencyRank` as a
+        .           /// borrowed version of itself.
+        .           impl<'a, R> HeuristicFrequencyRank for &'a R
+        .           where
+        .               R: HeuristicFrequencyRank,
+-- line 333 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 70 ----------------------------------------
+         .                   use core::sync::atomic::{AtomicPtr, Ordering};
+         .           
+         .                   type Fn = *mut ();
+         .                   type RealFn = $fnty;
+         .                   static FN: AtomicPtr<()> = AtomicPtr::new(detect as Fn);
+         .           
+         .                   #[cfg(target_feature = "sse2")]
+         .                   #[target_feature(enable = "sse2", enable = "avx2")]
+ 5,096,581 ( 0.44%)          unsafe fn find_avx2(
+         .                       $($needle: u8),+,
+         .                       $hay_start: *const u8,
+         .                       $hay_end: *const u8,
+         .                   ) -> $retty {
+         .                       use crate::arch::x86_64::avx2::memchr::$memchrty;
+10,187,800 ( 0.87%)              $memchrty::new_unchecked($($needle),+)
+         .                           .$memchrfind($hay_start, $hay_end)
+10,193,162 ( 0.87%)          }
+         .           
+         .                   #[cfg(target_feature = "sse2")]
+         .                   #[target_feature(enable = "sse2")]
+         .                   unsafe fn find_sse2(
+         .                       $($needle: u8),+,
+         .                       $hay_start: *const u8,
+         .                       $hay_end: *const u8,
+         .                   ) -> $retty {
+-- line 94 ----------------------------------------
+-- line 136 ----------------------------------------
+         .                           }
+         .                       };
+         .                       FN.store(fun as Fn, Ordering::Relaxed);
+         .                       // SAFETY: The only thing we need to uphold here is the
+         .                       // `#[target_feature]` requirements. Since we check is_available
+         .                       // above before using the corresponding implementation, we are
+         .                       // guaranteed to only call code that is supported on the current
+         .                       // CPU.
+         1 ( 0.00%)              fun($($needle),+, $hay_start, $hay_end)
+        49 ( 0.00%)  => /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2 (1x)
+         .                   }
+         .           
+         .                   // SAFETY: By virtue of the caller contract, RealFn is a function
+         .                   // pointer, which is always safe to transmute with a *mut (). Also,
+         .                   // since we use $memchrty::is_available, it is guaranteed to be safe
+         .                   // to call $memchrty::$memchrfind.
+         .                   unsafe {
+         .                       let fun = FN.load(Ordering::Relaxed);
+-- line 152 ----------------------------------------
+-- line 172 ----------------------------------------
+         .           /// Pointers must be valid. See `One::find_raw`.
+         .           #[inline(always)]
+         .           pub(crate) fn memchr_raw(
+         .               n1: u8,
+         .               start: *const u8,
+         .               end: *const u8,
+         .           ) -> Option<*const u8> {
+         .               // SAFETY: We provide a valid function pointer type.
+15,289,743 ( 1.31%)      unsafe_ifunc!(
+180,608,197 (15.44%)  => /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs:memchr::arch::x86_64::memchr::memchr_raw::find_avx2 (5,096,580x)
+        53 ( 0.00%)  => /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/sync/atomic.rs:memchr::arch::x86_64::memchr::memchr_raw::detect (1x)
+         .                   One,
+         .                   find_raw,
+         .                   unsafe fn(u8, *const u8, *const u8) -> Option<*const u8>,
+         .                   Option<*const u8>,
+         .                   start,
+         .                   end,
+         .                   n1
+         .               )
+-- line 188 ----------------------------------------
+
+     5,362 ( 0.00%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/memchr.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bstr-1.8.0/src/ext_slice.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 786 ----------------------------------------
+         .               /// let matches: Vec<usize> = b"".find_iter("").collect();
+         .               /// assert_eq!(matches, vec![0]);
+         .               /// ```
+         .               #[inline]
+         .               fn find_iter<'h, 'n, B: ?Sized + AsRef<[u8]>>(
+         .                   &'h self,
+         .                   needle: &'n B,
+         .               ) -> Find<'h, 'n> {
+ 6,099,275 ( 0.52%)          Find::new(self.as_bytes(), needle.as_ref())
+130,524,485 (11.16%)  => /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bstr-1.8.0/src/ext_slice.rs:bstr::ext_slice::Find::new (1,219,855x)
+         .               }
+         .           
+         .               /// Returns an iterator of the non-overlapping occurrences of the given
+         .               /// needle in reverse. The iterator yields byte offset positions indicating
+         .               /// the start of each match.
+         .               ///
+         .               /// # Complexity
+         .               ///
+-- line 802 ----------------------------------------
+-- line 1363 ----------------------------------------
+         .               /// ```
+         .               #[inline]
+         .               fn split_once_str<'a, B: ?Sized + AsRef<[u8]>>(
+         .                   &'a self,
+         .                   splitter: &B,
+         .               ) -> Option<(&'a [u8], &'a [u8])> {
+         .                   let bytes = self.as_bytes();
+         .                   let splitter = splitter.as_ref();
+   536,200 ( 0.05%)          let start = Finder::new(splitter).find(bytes)?;
+         .                   let end = start + splitter.len();
+         .                   Some((&bytes[..start], &bytes[end..]))
+         .               }
+         .           
+         .               /// Split this byte string at the last occurrence of `splitter`.
+         .               ///
+         .               /// If the `splitter` is found in the byte string, returns a tuple
+         .               /// containing the parts of the string before and after the last occurrence
+-- line 1379 ----------------------------------------
+-- line 3092 ----------------------------------------
+         .           /// lifetime of its needle.
+         .           #[derive(Clone, Debug)]
+         .           pub struct Finder<'a>(memmem::Finder<'a>);
+         .           
+         .           impl<'a> Finder<'a> {
+         .               /// Create a new finder for the given needle.
+         .               #[inline]
+         .               pub fn new<B: ?Sized + AsRef<[u8]>>(needle: &'a B) -> Finder<'a> {
+ 6,434,400 ( 0.55%)          Finder(memmem::Finder::new(needle.as_ref()))
+         .               }
+         .           
+         .               /// Convert this finder into its owned variant, such that it no longer
+         .               /// borrows the needle.
+         .               ///
+         .               /// If this is already an owned finder, then this is a no-op. Otherwise,
+         .               /// this copies the needle.
+         .               ///
+-- line 3108 ----------------------------------------
+-- line 3249 ----------------------------------------
+         .           #[derive(Debug)]
+         .           pub struct Find<'h, 'n> {
+         .               it: memmem::FindIter<'h, 'n>,
+         .               haystack: &'h [u8],
+         .               needle: &'n [u8],
+         .           }
+         .           
+         .           impl<'h, 'n> Find<'h, 'n> {
+14,638,260 ( 1.25%)      fn new(haystack: &'h [u8], needle: &'n [u8]) -> Find<'h, 'n> {
+34,155,940 ( 2.92%)          Find { it: memmem::find_iter(haystack, needle), haystack, needle }
+12,198,550 ( 1.04%)      }
+         .           }
+         .           
+         .           impl<'h, 'n> Iterator for Find<'h, 'n> {
+         .               type Item = usize;
+         .           
+         .               #[inline]
+         .               fn next(&mut self) -> Option<usize> {
+         .                   self.it.next()
+-- line 3267 ----------------------------------------
+-- line 3453 ----------------------------------------
+         .               /// splitter is matched at the end of the haystack. At that point, we still
+         .               /// need to yield an empty string following it.
+         .               done: bool,
+         .           }
+         .           
+         .           impl<'h, 's> Split<'h, 's> {
+         .               fn new(haystack: &'h [u8], splitter: &'s [u8]) -> Split<'h, 's> {
+         .                   let finder = haystack.find_iter(splitter);
+ 3,807,020 ( 0.33%)          Split { finder, last: 0, done: false }
+61,864,075 ( 5.29%)  => /usr/src/debug/glibc/glibc/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms (951,755x)
+         .               }
+         .           }
+         .           
+         .           impl<'h, 's> Iterator for Split<'h, 's> {
+         .               type Item = &'h [u8];
+         .           
+         .               #[inline]
+         .               fn next(&mut self) -> Option<&'h [u8]> {
+ 8,750,784 ( 0.75%)          let haystack = self.finder.haystack;
+         .                   match self.finder.next() {
+         .                       Some(start) => {
+         .                           let next = &haystack[self.last..start];
+ 6,941,109 ( 0.59%)                  self.last = start + self.finder.needle.len();
+         .                           Some(next)
+         .                       }
+         .                       None => {
+10,898,265 ( 0.93%)                  if self.last >= haystack.len() {
+ 2,021,474 ( 0.17%)                      if !self.done {
+         .                                   self.done = true;
+         .                                   Some(b"")
+         .                               } else {
+         .                                   None
+         .                               }
+         .                           } else {
+         .                               let s = &haystack[self.last..];
+ 1,050,952 ( 0.09%)                      self.last = haystack.len();
+ 2,101,904 ( 0.18%)                      self.done = true;
+         .                               Some(s)
+         .                           }
+         .                       }
+         .                   }
+         .               }
+         .           }
+         .           
+         .           /// An iterator over substrings in a byte string, split by a separator, in
+-- line 3496 ----------------------------------------
+-- line 3732 ----------------------------------------
+         .           }
+         .           
+         .           impl<'a> Iterator for LinesWithTerminator<'a> {
+         .               type Item = &'a [u8];
+         .           
+         .               #[inline]
+         .               fn next(&mut self) -> Option<&'a [u8]> {
+         .                   match self.bytes.find_byte(b'\n') {
+    10,724 ( 0.00%)              None if self.bytes.is_empty() => None,
+         .                       None => {
+         .                           let line = self.bytes;
+         .                           self.bytes = b"";
+         .                           Some(line)
+         .                       }
+         .                       Some(end) => {
+   265,419 ( 0.02%)                  let line = &self.bytes[..end + 1];
+         .                           self.bytes = &self.bytes[end + 1..];
+         .                           Some(line)
+         .                       }
+         .                   }
+         .               }
+         .           }
+         .           
+         .           impl<'a> DoubleEndedIterator for LinesWithTerminator<'a> {
+-- line 3755 ----------------------------------------
+-- line 3769 ----------------------------------------
+         .                       }
+         .                   }
+         .               }
+         .           }
+         .           
+         .           impl<'a> iter::FusedIterator for LinesWithTerminator<'a> {}
+         .           
+         .           fn trim_last_terminator(mut s: &[u8]) -> &[u8] {
+   268,100 ( 0.02%)      if s.last_byte() == Some(b'\n') {
+         .                   s = &s[..s.len() - 1];
+   265,419 ( 0.02%)          if s.last_byte() == Some(b'\r') {
+         .                       s = &s[..s.len() - 1];
+         .                   }
+         .               }
+         .               s
+         .           }
+         .           
+         .           #[cfg(all(test, feature = "std"))]
+         .           mod tests {
+-- line 3787 ----------------------------------------
+
+   882,049 ( 0.08%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bstr-1.8.0/src/ext_slice.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/cow.rs
+--------------------------------------------------------------------------------
+Ir                 
+
+
+4,375,392 ( 0.37%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/cow.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/packedpair.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 49 ----------------------------------------
+         .               /// Callers must ensure that whatever vector type this routine is called
+         .               /// with is supported by the current environment.
+         .               ///
+         .               /// Callers must also ensure that `needle.len() >= 2`.
+         .               #[inline(always)]
+         .               pub(crate) unsafe fn new(needle: &[u8], pair: Pair) -> Finder<V> {
+         .                   let max_index = pair.index1().max(pair.index2());
+         .                   let min_haystack_len =
+ 2,439,710 ( 0.21%)              core::cmp::max(needle.len(), usize::from(max_index) + V::BYTES);
+ 3,659,565 ( 0.31%)          let v1 = V::splat(needle[usize::from(pair.index1())]);
+ 3,659,565 ( 0.31%)          let v2 = V::splat(needle[usize::from(pair.index2())]);
+         .                   Finder { pair, v1, v2, min_haystack_len }
+         .               }
+         .           
+         .               /// Searches the given haystack for the given needle. The needle given
+         .               /// should be the same as the needle that this finder was initialized
+         .               /// with.
+         .               ///
+         .               /// # Panics
+-- line 67 ----------------------------------------
+-- line 96 ----------------------------------------
+         .                   let mut cur = start;
+         .           
+         .                   // N.B. I did experiment with unrolling the loop to deal with size(V)
+         .                   // bytes at a time and 2*size(V) bytes at a time. The double unroll
+         .                   // was marginally faster while the quadruple unroll was unambiguously
+         .                   // slower. In the end, I decided the complexity from unrolling wasn't
+         .                   // worth it. I used the memmem/krate/prebuilt/huge-en/ benchmarks to
+         .                   // compare.
+ 8,144,878 ( 0.70%)          while cur <= max {
+         .                       if let Some(chunki) = self.find_in_chunk(needle, cur, end, all) {
+         .                           return Some(matched(start, cur, chunki));
+         .                       }
+         .                       cur = cur.add(V::BYTES);
+         .                   }
+   445,046 ( 0.04%)          if cur < end {
+         .                       let remaining = end.distance(cur);
+         .                       debug_assert!(
+         .                           remaining < self.min_haystack_len,
+         .                           "remaining bytes should be smaller than the minimum haystack \
+         .                            length of {}, but there are {} bytes remaining",
+         .                           self.min_haystack_len,
+         .                           remaining,
+         .                       );
+   445,046 ( 0.04%)              if remaining < needle.len() {
+         .                           return None;
+         .                       }
+         .                       debug_assert!(
+         .                           max < cur,
+         .                           "after main loop, cur should have exceeded max",
+         .                       );
+         .                       let overlap = cur.distance(max);
+         .                       debug_assert!(
+-- line 127 ----------------------------------------
+-- line 230 ----------------------------------------
+         .                   &self,
+         .                   needle: &[u8],
+         .                   cur: *const u8,
+         .                   end: *const u8,
+         .                   mask: V::Mask,
+         .               ) -> Option<usize> {
+         .                   let index1 = usize::from(self.pair.index1());
+         .                   let index2 = usize::from(self.pair.index2());
+   222,523 ( 0.02%)          let chunk1 = V::load_unaligned(cur.add(index1));
+   222,523 ( 0.02%)          let chunk2 = V::load_unaligned(cur.add(index2));
+         .                   let eq1 = chunk1.cmpeq(self.v1);
+         .                   let eq2 = chunk2.cmpeq(self.v2);
+         .           
+         .                   let mut offsets = eq1.and(eq2).movemask().and(mask);
+ 2,147,481 ( 0.18%)          while offsets.has_non_zero() {
+         .                       let offset = offsets.first_offset();
+         .                       let cur = cur.add(offset);
+ 3,415,594 ( 0.29%)              if end.sub(needle.len()) < cur {
+         .                           return None;
+         .                       }
+ 1,707,797 ( 0.15%)              if is_equal_raw(needle.as_ptr(), cur, needle.len()) {
+         .                           return Some(offset);
+         .                       }
+         .                       offsets = offsets.clear_least_significant_bit();
+         .                   }
+         .                   None
+         .               }
+         .           
+         .               /// Search for an occurrence of our byte pair from the needle in the chunk
+-- line 258 ----------------------------------------
+-- line 290 ----------------------------------------
+         .               }
+         .           
+         .               /// Returns the minimum haystack length that this `Finder` can search.
+         .               ///
+         .               /// Providing a haystack to this `Finder` shorter than this length is
+         .               /// guaranteed to result in a panic.
+         .               #[inline(always)]
+         .               pub(crate) fn min_haystack_len(&self) -> usize {
+ 6,568,450 ( 0.56%)          self.min_haystack_len
+         .               }
+         .           }
+         .           
+         .           /// Accepts a chunk-relative offset and returns a haystack relative offset.
+         .           ///
+         .           /// This used to be marked `#[cold]` and `#[inline(never)]`, but I couldn't
+         .           /// observe a consistent measureable difference between that and just inlining
+         .           /// it. So we go with inlining it.
+-- line 306 ----------------------------------------
+
+17,407,733 ( 1.49%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/generic/packedpair.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: src/solutions/year2023/day02.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+         .           use std::{fmt::Display, hint::unreachable_unchecked};
+         .           
+         .           use bstr::ByteSlice;
+         .           
+         .           use crate::helper::parsing::{BytesAsNumber, PartialConsume};
+         .           
+    50,939 ( 0.00%)  pub fn part1(input: &str) -> impl Display {
+         .               const QUOTA: [u8; 3] = [12, 13, 14];
+         .           
+         .               let mut sum = 0;
+         .               let input = input.as_bytes();
+         .               'outer: for (game, line) in input.lines().enumerate() {
+         .                   let (_, hands) = line.split_once_str(b": ").unwrap();
+         .           
+ 1,608,600 ( 0.14%)          for hand in hands.split_str(b"; ") {
+17,426,500 ( 1.49%)  => /usr/src/debug/glibc/glibc/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms (268,100x)
+ 1,903,510 ( 0.16%)              let mut sums: [u8; 3] = [0; 3];
+         .           
+ 2,855,265 ( 0.24%)              for mut set in hand.split_str(b", ") {
+         .                           let num = set.next(b' ');
+         .                           let ty = set.next(b' ');
+15,292,424 ( 1.31%)                  let ty = match ty[0] {
+         .                               b'r' => 0,
+         .                               b'g' => 1,
+         .                               b'b' => 2,
+         .                               _ => unsafe { unreachable_unchecked() },
+         .                           };
+         .           
+ 4,825,800 ( 0.41%)                  sums[ty] += num.as_num::<u8>();
+         .           
+ 7,238,700 ( 0.62%)                  if sums[ty] > QUOTA[ty] {
+         .                               continue 'outer;
+         .                           }
+         .                       }
+         .                   }
+         .           
+   163,541 ( 0.01%)          sum += game + 1;
+         .               }
+         .           
+         .               sum
+    21,448 ( 0.00%)  }
+         .           
+         .           pub fn part2(input: &str) -> impl Display {
+         .               let mut sum: u32 = 0;
+         .               let input = input.as_bytes();
+         .           
+         .               'outer: for mut line in input.lines() {
+         .                   let mut cut_off: &[u8] = &[];
+         .           
+-- line 48 ----------------------------------------
+
+ 3,817,744 ( 0.33%)  <counts for unidentified lines in src/solutions/year2023/day02.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/packedpair.rs
+--------------------------------------------------------------------------------
+Ir                 
+
+-- line 147 ----------------------------------------
+        .               /// when it is safe to call `sse2` and `avx2` routines.)
+        .               #[target_feature(enable = "sse2", enable = "avx2")]
+        .               #[inline]
+        .               unsafe fn find_impl(
+        .                   &self,
+        .                   haystack: &[u8],
+        .                   needle: &[u8],
+        .               ) -> Option<usize> {
+3,849,916 ( 0.33%)          if haystack.len() < self.avx2.min_haystack_len() {
+        .                       self.sse2.find(haystack, needle)
+        .                   } else {
+        .                       self.avx2.find(haystack, needle)
+        .                   }
+        .               }
+        .           
+        .               /// Execute a prefilter search using AVX2 vectors and routines.
+        .               ///
+-- line 163 ----------------------------------------
+
+8,887,515 ( 0.76%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/packedpair.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 72 ----------------------------------------
+         .                   debug_assert_ne!(
+         .                       pair.index1(),
+         .                       pair.index2(),
+         .                       "pair offsets should not be equivalent"
+         .                   );
+         .                   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+         .                   {
+         .                       if let Some(pp) = avx2::Finder::with_pair(needle, pair) {
+ 1,219,855 ( 0.10%)                  if do_packed_search(needle) {
+         .                               trace!("building x86_64 AVX2 substring searcher");
+         .                               let kind = SearcherKind { avx2: pp };
+12,198,550 ( 1.04%)                      Searcher { call: searcher_kind_avx2, kind, rabinkarp }
+         .                           } else if prefilter.is_none() {
+         .                               Searcher::twoway(needle, rabinkarp, None)
+         .                           } else {
+         .                               let prestrat = Prefilter::avx2(pp, needle);
+         .                               Searcher::twoway(needle, rabinkarp, Some(prestrat))
+         .                           }
+         .                       } else if let Some(pp) = sse2::Finder::with_pair(needle, pair) {
+         .                           if do_packed_search(needle) {
+-- line 91 ----------------------------------------
+-- line 208 ----------------------------------------
+         .               /// seem to be enough in some cases.
+         .               #[inline(always)]
+         .               pub(crate) fn find(
+         .                   &self,
+         .                   prestate: &mut PrefilterState,
+         .                   haystack: &[u8],
+         .                   needle: &[u8],
+         .               ) -> Option<usize> {
+   536,200 ( 0.05%)          if haystack.len() < needle.len() {
+         .                       None
+         .                   } else {
+         .                       // SAFETY: By construction, we've ensured that the function
+         .                       // in `self.call` is properly paired with the union used in
+         .                       // `self.kind`.
+19,646,368 ( 1.68%)              unsafe { (self.call)(self, prestate, haystack, needle) }
+468,051,661 (40.00%)  => /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs:memchr::memmem::searcher::searcher_kind_avx2 (4,643,492x)
+         .                   }
+         .               }
+         .           }
+         .           
+         .           impl core::fmt::Debug for Searcher {
+         .               fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+         .                   f.debug_struct("Searcher")
+         .                       .field("call", &"<searcher function>")
+-- line 230 ----------------------------------------
+-- line 375 ----------------------------------------
+         .           
+         .           /// Reads from the `avx2` field of `SearcherKind` to execute the x86_64 AVX2
+         .           /// vectorized substring search implementation.
+         .           ///
+         .           /// # Safety
+         .           ///
+         .           /// Callers must ensure that the `searcher.kind.avx2` union field is set.
+         .           #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
+32,504,444 ( 2.78%)  unsafe fn searcher_kind_avx2(
+         .               searcher: &Searcher,
+         .               _prestate: &mut PrefilterState,
+         .               haystack: &[u8],
+         .               needle: &[u8],
+         .           ) -> Option<usize> {
+         .               let finder = &searcher.kind.avx2;
+ 9,286,984 ( 0.79%)      if haystack.len() < finder.min_haystack_len() {
+         .                   searcher.rabinkarp.find(haystack, needle)
+         .               } else {
+         .                   finder.find(haystack, needle)
+         .               }
+51,078,412 ( 4.37%)  }
+         .           
+         .           /// Reads from the `simd128` field of `SearcherKind` to execute the wasm32
+         .           /// simd128 vectorized substring search implementation.
+         .           ///
+         .           /// # Safety
+         .           ///
+         .           /// Callers must ensure that the `searcher.kind.simd128` union field is set.
+         .           #[cfg(target_arch = "wasm32")]
+-- line 403 ----------------------------------------
+-- line 898 ----------------------------------------
+         .               /// the microbenchmarks. In particular, this can impact the
+         .               /// pathological/repeated-{huge,small} benchmarks quite a bit if it's set
+         .               /// too low.
+         .               const MIN_SKIP_BYTES: u32 = 8;
+         .           
+         .               /// Create a fresh prefilter state.
+         .               #[inline]
+         .               pub(crate) fn new() -> PrefilterState {
+   268,100 ( 0.02%)          PrefilterState { skips: 1, skipped: 0 }
+         .               }
+         .           
+         .               /// Update this state with the number of bytes skipped on the last
+         .               /// invocation of the prefilter.
+         .               #[inline]
+         .               fn update(&mut self, skipped: usize) {
+         .                   self.skips = self.skips.saturating_add(1);
+         .                   // We need to do this dance since it's technically possible for
+-- line 914 ----------------------------------------
+-- line 1021 ----------------------------------------
+         .               /// This specific number was chosen by tweaking a bit and running
+         .               /// benchmarks. The rare-medium-needle, for example, gets about 5% faster
+         .               /// by using this algorithm instead of a prefilter-accelerated Two-Way.
+         .               /// There's also a theoretical desire to keep this number reasonably
+         .               /// low, to mitigate the impact of pathological cases. I did try 64, and
+         .               /// some benchmarks got a little better, and others (particularly the
+         .               /// pathological ones), got a lot worse. So... 32 it is?
+         .               const MAX_LEN: usize = 32;
+ 1,219,855 ( 0.10%)      MIN_LEN <= needle.len() && needle.len() <= MAX_LEN
+         .           }
+
+ 6,383,461 ( 0.55%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/memmem/searcher.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 81 ----------------------------------------
+         .               ///
+         .               /// The needle may be empty. The empty needle matches at every byte offset.
+         .               ///
+         .               /// Note that callers must pass the same needle to all search calls using
+         .               /// this `Finder`.
+         .               #[inline]
+         .               pub fn new(needle: &[u8]) -> Finder {
+         .                   let mut s = Finder { hash: Hash::new(), hash_2pow: 1 };
+ 1,219,855 ( 0.10%)          let first_byte = match needle.get(0) {
+         .                       None => return s,
+ 1,219,855 ( 0.10%)              Some(&first_byte) => first_byte,
+         .                   };
+         .                   s.hash.add(first_byte);
+         .                   for b in needle.iter().copied().skip(1) {
+         .                       s.hash.add(b);
+         .                       s.hash_2pow = s.hash_2pow.wrapping_shl(1);
+         .                   }
+         .                   s
+         .               }
+-- line 99 ----------------------------------------
+-- line 151 ----------------------------------------
+         .                   &self,
+         .                   hstart: *const u8,
+         .                   hend: *const u8,
+         .                   nstart: *const u8,
+         .                   nend: *const u8,
+         .               ) -> Option<*const u8> {
+         .                   let hlen = hend.distance(hstart);
+         .                   let nlen = nend.distance(nstart);
+ 5,437,068 ( 0.46%)          if nlen > hlen {
+         .                       return None;
+         .                   }
+         .                   let mut cur = hstart;
+         .                   let end = hend.sub(nlen);
+         .                   let mut hash = Hash::forward(cur, cur.add(nlen));
+13,938,519 ( 1.19%)          loop {
+19,238,856 ( 1.64%)              if self.hash == hash && is_equal_raw(cur, nstart, nlen) {
+11,466,637 ( 0.98%)  => /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs:memchr::arch::all::rabinkarp::is_equal_raw (882,049x)
+         .                           return Some(cur);
+         .                       }
+33,410,622 ( 2.86%)              if cur >= end {
+         .                           return None;
+         .                       }
+         .                       hash.roll(self, cur.read(), cur.add(nlen).read());
+         .                       cur = cur.add(1);
+         .                   }
+         .               }
+         .           }
+         .           
+-- line 177 ----------------------------------------
+-- line 276 ----------------------------------------
+         .           /// Whether RK is believed to be very fast for the given needle/haystack.
+         .           #[inline]
+         .           pub(crate) fn is_fast(haystack: &[u8], _needle: &[u8]) -> bool {
+         .               haystack.len() < 16
+         .           }
+         .           
+         .           /// A Rabin-Karp hash. This might represent the hash of a needle, or the hash
+         .           /// of a rolling window in the haystack.
+36,035,321 ( 3.08%)  #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+         .           struct Hash(u32);
+         .           
+         .           impl Hash {
+         .               /// Create a new hash that represents the empty string.
+         .               #[inline(always)]
+         .               fn new() -> Hash {
+         .                   Hash(0)
+         .               }
+-- line 292 ----------------------------------------
+-- line 294 ----------------------------------------
+         .               /// Create a new hash from the bytes given for use in forward searches.
+         .               ///
+         .               /// # Safety
+         .               ///
+         .               /// The given pointers must be valid to read from within their range.
+         .               #[inline(always)]
+         .               unsafe fn forward(mut start: *const u8, end: *const u8) -> Hash {
+         .                   let mut hash = Hash::new();
+16,311,204 ( 1.39%)          while start < end {
+         .                       hash.add(start.read());
+         .                       start = start.add(1);
+         .                   }
+         .                   hash
+         .               }
+         .           
+         .               /// Create a new hash from the bytes given for use in reverse searches.
+         .               ///
+-- line 310 ----------------------------------------
+-- line 354 ----------------------------------------
+         .           /// tighter and leads to some performance improvement. See the
+         .           /// memmem/krate/prebuilt/sliceslice-words/words benchmark.
+         .           ///
+         .           /// # Safety
+         .           ///
+         .           /// Same as `crate::arch::all::is_equal_raw`.
+         .           #[cold]
+         .           #[inline(never)]
+   882,049 ( 0.08%)  unsafe fn is_equal_raw(x: *const u8, y: *const u8, n: usize) -> bool {
+         .               crate::arch::all::is_equal_raw(x, y, n)
+ 1,764,098 ( 0.15%)  }
+         .           
+         .           #[cfg(test)]
+         .           mod tests {
+         .               use super::*;
+         .           
+         .               define_substring_forward_quickcheck!(|h, n| Some(
+         .                   Finder::new(n).find(h, n)
+         .               ));
+-- line 372 ----------------------------------------
+
+28,949,438 ( 2.47%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/rabinkarp.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/mod.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 109 ----------------------------------------
+         .               mut x: *const u8,
+         .               mut y: *const u8,
+         .               n: usize,
+         .           ) -> bool {
+         .               // If we don't have enough bytes to do 4-byte at a time loads, then
+         .               // handle each possible length specially. Note that I used to have a
+         .               // byte-at-a-time loop here and that turned out to be quite a bit slower
+         .               // for the memmem/pathological/defeat-simple-vector-alphabet benchmark.
+ 3,694,418 ( 0.32%)      if n < 4 {
+ 4,292,281 ( 0.37%)          return match n {
+         .                       0 => true,
+         .                       1 => x.read() == y.read(),
+         .                       2 => {
+ 2,589,846 ( 0.22%)                  x.cast::<u16>().read_unaligned()
+         .                               == y.cast::<u16>().read_unaligned()
+         .                       }
+         .                       // I also tried copy_nonoverlapping here and it looks like the
+         .                       // codegen is the same.
+         .                       3 => x.cast::<[u8; 3]>().read() == y.cast::<[u8; 3]>().read(),
+         .                       _ => unreachable!(),
+         .                   };
+         .               }
+-- line 130 ----------------------------------------
+
+36,488,410 ( 3.12%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/all/mod.rs>
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/memchr.rs
+--------------------------------------------------------------------------------
+Ir                  
+
+-- line 176 ----------------------------------------
+         .               /// Note that callers may pass a pair of pointers such that `start >= end`.
+         .               /// In that case, `None` will always be returned.
+         .               #[inline]
+         .               pub unsafe fn find_raw(
+         .                   &self,
+         .                   start: *const u8,
+         .                   end: *const u8,
+         .               ) -> Option<*const u8> {
+10,193,162 ( 0.87%)          if start >= end {
+         .                       return None;
+         .                   }
+         .                   let len = end.distance(start);
+10,187,800 ( 0.87%)          if len < __m256i::BYTES {
+ 9,651,600 ( 0.82%)              return if len < __m128i::BYTES {
+         .                           // SAFETY: We require the caller to pass valid start/end
+         .                           // pointers.
+         .                           generic::fwd_byte_by_byte(start, end, |b| {
+29,759,100 ( 2.54%)                      b == self.sse2.needle1()
+         .                           })
+         .                       } else {
+         .                           // SAFETY: We require the caller to pass valid start/end
+         .                           // pointers.
+         .                           self.find_raw_sse2(start, end)
+         .                       };
+         .                   }
+         .                   // SAFETY: Building a `One` means it's safe to call both 'sse2' and
+-- line 201 ----------------------------------------
+
+   268,100 ( 0.02%)  <counts for unidentified lines in /home/qther/.cargo/registry/src/index.crates.io-6f17d22bba15001f/memchr-2.6.4/src/arch/x86_64/avx2/memchr.rs>
+
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/simd.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/x86/avx2.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/../../stdarch/crates/core_arch/src/x86/sse2.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/cmp.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/convert/num.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/intrinsics.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/iter/adapters/take.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/num/mod.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ops/arith.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ops/bit.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/option.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/const_ptr.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/mod.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/ptr/non_null.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/index.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/iter/macros.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/slice/mod.rs
+  /rustc/87e1447aadaa2899ff6ccabe1fa669eb50fb60a1/library/core/src/sync/atomic.rs
+  /usr/src/debug/glibc/glibc/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+
+--------------------------------------------------------------------------------
+Ir                   
+--------------------------------------------------------------------------------
+650,836,880 (55.63%)  events annotated
+

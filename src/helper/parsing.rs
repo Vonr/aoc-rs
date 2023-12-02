@@ -139,6 +139,51 @@ impl StripPrefixUnchecked<u8> for [u8] {
     }
 }
 
+pub trait PartialConsume<T> {
+    fn skip_to_unit<'l, 'r: 'l>(self: &mut &'r Self, unit: T) -> &'l [T];
+    fn skip_to_group<'l, 'r: 'l>(self: &mut &'r Self, group: impl AsRef<[T]>) -> &'l [T];
+}
+
+impl PartialConsume<u8> for [u8] {
+    #[inline]
+    fn skip_to_unit<'l, 'r: 'l>(self: &mut &'r Self, unit: u8) -> &'l [u8] {
+        let idx = self.find_byte(unit);
+        let ret = match idx {
+            Some(idx) => {
+                let (l, r) = self.split_at(idx);
+                *self = &r[1..];
+                l
+            }
+            None => {
+                let l = *self;
+                *self = &[];
+                l
+            }
+        };
+
+        ret
+    }
+
+    #[inline]
+    fn skip_to_group<'l, 'r: 'l>(self: &mut &'r Self, group: impl AsRef<[u8]>) -> &'l [u8] {
+        let idx = self.find(group.as_ref());
+        let ret = match idx {
+            Some(idx) => {
+                let (l, r) = self.split_at(idx);
+                *self = &r[1..];
+                l
+            }
+            None => {
+                let l = *self;
+                *self = &[];
+                l
+            }
+        };
+
+        ret
+    }
+}
+
 mod tests {
     use super::{BytesAsNumber, IntoColumns};
 

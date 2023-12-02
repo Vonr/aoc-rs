@@ -19,3 +19,8 @@ default-features = false
 version = "1.8.0"
 default-features = false
 features = ["std"]
+
+[profile.release-with-debug]
+inherits = "release"
+strip = false
+debug = true

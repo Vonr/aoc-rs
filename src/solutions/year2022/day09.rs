@@ -3,7 +3,7 @@ use std::{
     fmt::Display,
 };
 
-use bstr::io::BufReadExt;
+use bstr::{io::BufReadExt, ByteSlice};
 
 use crate::helper::parsing::BytesAsNumber;
 
@@ -88,7 +88,7 @@ pub fn part1(input: &str) -> impl Display {
     let mut visited: HashSet<(isize, isize)> = HashSet::new();
     visited.insert(tail.coords());
 
-    input.as_bytes().for_byte_line(|line| {
+    for line in input.as_bytes().lines() {
         let dir = line[0];
         let steps: isize = line[2..].as_num();
 
@@ -97,9 +97,7 @@ pub fn part1(input: &str) -> impl Display {
             tail.towards(&head);
             visited.insert(tail.coords());
         }
-
-        Ok(true)
-    });
+    }
 
     visited.len()
 }
@@ -111,7 +109,7 @@ pub fn part2(input: &str) -> impl Display {
     let mut visited: HashSet<(isize, isize)> = HashSet::new();
     visited.insert((0, 0));
 
-    input.as_bytes().for_byte_line(|line| {
+    for line in input.as_bytes().lines() {
         let dir = line[0];
         let steps: isize = line[2..].as_num();
 
@@ -124,9 +122,7 @@ pub fn part2(input: &str) -> impl Display {
             }
             visited.insert(tails[tails.len() - 1].coords());
         }
-
-        Ok(true)
-    });
+    }
 
     visited.len()
 }
