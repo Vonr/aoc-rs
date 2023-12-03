@@ -18,18 +18,6 @@ impl<T: Debug> Debug for Matrix<T> {
     }
 }
 
-macro_rules! tracked_panic {
-    ($($inner:tt),*) => {{
-        #[cold]
-        #[track_caller]
-        fn __panic() {
-            panic!($($inner),*)
-        }
-
-        __panic()
-    }};
-}
-
 impl<T> Matrix<T> {
     pub fn new(width: usize) -> Self {
         Self {
@@ -79,18 +67,24 @@ impl<T> Matrix<T> {
         self.inner.reserve(additional_rows * self.columns());
     }
 
+    #[track_caller]
     pub fn push(&mut self, row: impl AsRef<[T]>)
     where
         T: Clone,
     {
         let row = row.as_ref();
         if row.len() != self.width() {
-            tracked_panic!("Tried to push row with different width.")
+            panic!(
+                "Tried to push row with different width. {} != {}",
+                self.width(),
+                row.len()
+            );
         }
 
         self.inner.extend_from_slice(row);
     }
 
+    #[track_caller]
     pub fn insert(&mut self, at: usize, row: impl AsRef<[T]>)
     where
         T: Clone,
@@ -98,15 +92,16 @@ impl<T> Matrix<T> {
         let row: &[T] = row.as_ref();
 
         if row.len() != self.width() {
-            tracked_panic!("Tried to push row with different width.")
+            panic!("Tried to push row with different width.")
         }
 
         self.inner.splice(at..at, row.iter().cloned());
     }
 
+    #[track_caller]
     pub fn remove(&mut self, row: usize) {
         if row >= self.rows() {
-            tracked_panic!("Tried to remove non-existent row.");
+            panic!("Tried to remove non-existent row.");
         }
 
         self.inner
@@ -184,6 +179,14 @@ impl<'m, T> Index<usize> for &'m Matrix<T> {
     }
 }
 
+impl<T> Index<usize> for Matrix<T> {
+    type Output = [T];
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.row(index).unwrap()
+    }
+}
+
 impl<'m, T> Index<usize> for &'m mut Matrix<T> {
     type Output = [T];
 
@@ -198,16 +201,28 @@ impl<'m, T> IndexMut<usize> for &'m mut Matrix<T> {
     }
 }
 
+impl<T> IndexMut<usize> for Matrix<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.row_mut(index).unwrap()
+    }
+}
+
 impl<T, I> Extend<I> for Matrix<T>
 where
     I: Iterator<Item = T>,
 {
+    #[track_caller]
     fn extend<O: IntoIterator<Item = I>>(&mut self, iter: O) {
         for iter in iter {
             let initial_len = self.elements();
             self.inner.extend(iter);
-            if self.elements() - initial_len != self.width() {
-                tracked_panic!("Tried to extend with iterator of different width.")
+            let change = self.elements() - initial_len;
+            if change != self.width() {
+                panic!(
+                    "Tried to extend with iterator of different width. {} != {}",
+                    self.width(),
+                    change
+                );
             }
         }
     }

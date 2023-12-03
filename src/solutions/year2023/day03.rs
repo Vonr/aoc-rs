@@ -4,20 +4,22 @@ use bstr::ByteSlice;
 use nom::{bytes::streaming::take_while1, Parser};
 use nom_supreme::ParserExt;
 
-use crate::helper::parsing::BytesAsNumber;
+use crate::helper::{matrix::Matrix, parsing::BytesAsNumber};
 
-fn to_board(input: &[u8]) -> Vec<Vec<u8>> {
-    let mut out: Vec<Vec<_>> = Vec::new();
+fn to_board(input: &[u8]) -> Matrix<u8> {
+    let width = input.find_byte(b'\n').unwrap() + 2;
+    let mut out = Matrix::new(width);
 
-    let border = vec![b'.'; input.find_byte(b'\n').unwrap() - 1];
-    out.push(border.clone());
+    let border = vec![b'.'; width];
+    out.push(&border);
 
+    let mut buf = Vec::with_capacity(width);
     for line in input.lines() {
-        let mut new = Vec::with_capacity(line.len() + 2);
-        new.push(b'.');
-        new.extend_from_slice(line);
-        new.push(b'.');
-        out.push(new);
+        buf.push(b'.');
+        buf.extend_from_slice(line);
+        buf.push(b'.');
+        out.push(&buf);
+        buf.clear()
     }
 
     out.push(border);
@@ -35,7 +37,7 @@ pub fn part1(input: &str) -> impl Display {
 
     let mut sum: u32 = 0;
 
-    for (idx, mut line) in board.iter().enumerate().skip(1).rev().skip(1).rev() {
+    for (idx, mut line) in board.iter_rows().enumerate().skip(1).take(board.rows() - 2) {
         let mut skipped: usize = 0;
         while line.len() > skipped {
             if !line[skipped].is_ascii_digit() {
@@ -71,7 +73,7 @@ pub fn part2(input: &str) -> impl Display {
 
     let mut sum: u32 = 0;
 
-    for (idx, mut line) in board.iter().enumerate().skip(1).rev().skip(1).rev() {
+    for (idx, mut line) in board.iter_rows().enumerate().skip(1).take(board.rows() - 2) {
         let mut skipped: usize = 1;
         'outer: while let Some(gear_idx) = line[skipped..].find_byte(b'*') {
             let mut found = 0;
