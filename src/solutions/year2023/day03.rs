@@ -78,13 +78,12 @@ pub fn part2(input: &str) -> impl Display {
     for (idx, mut line) in board.iter().enumerate().skip(1).rev().skip(1).rev() {
         let mut skipped: usize = 1;
         'outer: while let Some(gear_idx) = line[skipped..].find_byte(b'*') {
-            let mut seen_num = 0;
+            let mut found = 0;
             skipped += gear_idx + 1;
 
-            let mut seen = [(0, 0); 9];
+            let mut seen = [(0, 0); 2];
             let mut ans = 1;
 
-            let mut found = 0;
             for row in 0..3 {
                 for col in 0..3 {
                     let y = idx + row - 1;
@@ -98,11 +97,10 @@ pub fn part2(input: &str) -> impl Display {
                             beg -= 1;
                         }
 
-                        if seen[..seen_num].contains(&(y, beg)) {
+                        if seen[..found].contains(&(y, beg)) {
                             continue;
                         }
 
-                        found += 1;
                         if found > 2 {
                             continue 'outer;
                         }
@@ -111,8 +109,8 @@ pub fn part2(input: &str) -> impl Display {
                             end += 1;
                         }
 
-                        seen[seen_num] = (y, beg);
-                        seen_num += 1;
+                        seen[found] = (y, beg);
+                        found += 1;
 
                         let num = line[beg..=end].as_num::<u64>();
                         ans *= num;
