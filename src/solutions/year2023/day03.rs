@@ -33,7 +33,7 @@ pub fn part1(input: &str) -> impl Display {
     let input = input.as_bytes();
     let board = to_board(input);
 
-    let mut sum: u64 = 0;
+    let mut sum: u32 = 0;
 
     for (idx, mut line) in board.iter().enumerate().skip(1).rev().skip(1).rev() {
         let mut skipped: usize = 0;
@@ -50,22 +50,15 @@ pub fn part1(input: &str) -> impl Display {
                 end += 1;
             }
 
-            let mut num = &line[beg..=end];
-
-            if sym(line[skipped - 1])
-                || sym(line[skipped + num.len()])
-                || board[idx - 1][skipped - 1..=skipped + num.len()]
-                    .iter()
-                    .any(|&b| sym(b))
-                || board[idx + 1][skipped - 1..=skipped + num.len()]
-                    .iter()
-                    .any(|&b| sym(b))
+            if sym(line[beg - 1])
+                || sym(line[end + 1])
+                || board[idx - 1][beg - 1..=end + 1].iter().any(|&b| sym(b))
+                || board[idx + 1][beg - 1..=end + 1].iter().any(|&b| sym(b))
             {
-                let num = num.as_num::<u64>();
-                sum += num;
+                sum += line[beg..=end].as_num::<u32>();
             }
 
-            skipped += num.len();
+            skipped += end + 1 - beg;
         }
     }
 
@@ -76,7 +69,7 @@ pub fn part2(input: &str) -> impl Display {
     let input = input.as_bytes();
     let board = to_board(input);
 
-    let mut sum: u64 = 0;
+    let mut sum: u32 = 0;
 
     for (idx, mut line) in board.iter().enumerate().skip(1).rev().skip(1).rev() {
         let mut skipped: usize = 1;
@@ -115,7 +108,7 @@ pub fn part2(input: &str) -> impl Display {
                         seen[found] = (y, beg);
                         found += 1;
 
-                        let num = line[beg..=end].as_num::<u64>();
+                        let num = line[beg..=end].as_num::<u32>();
                         ans *= num;
                     }
                 }
