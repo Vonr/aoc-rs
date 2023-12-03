@@ -50,12 +50,14 @@ impl Unique for [u8] {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use std::array;
 
     use crate::helper::util::Unique;
 
     #[test]
+    #[cfg(not(miri))]
     fn unique() {
         let mut all: [u8; 256] = array::from_fn(|i| i as u8);
         assert!(all.unique());
