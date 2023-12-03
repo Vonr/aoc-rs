@@ -6,19 +6,21 @@ use nom_supreme::ParserExt;
 
 use crate::helper::parsing::BytesAsNumber;
 
-fn to_board(input: &[u8]) -> VecDeque<Vec<u8>> {
-    let mut out: VecDeque<Vec<_>> = VecDeque::new();
+fn to_board(input: &[u8]) -> Vec<Vec<u8>> {
+    let mut out: Vec<Vec<_>> = Vec::new();
+
+    let border = vec![b'.'; input.find_byte(b'\n').unwrap() - 1];
+    out.push(border.clone());
 
     for line in input.lines() {
-        let mut line: VecDeque<u8> = line.to_vec().into();
-        line.push_front(b'.');
-        line.push_back(b'.');
-        out.push_back(line.into());
+        let mut new = Vec::with_capacity(line.len() + 2);
+        new.push(b'.');
+        new.extend_from_slice(line);
+        new.push(b'.');
+        out.push(new);
     }
 
-    let border = vec![b'.'; out[0].len()];
-    out.push_front(border.clone());
-    out.push_back(border);
+    out.push(border);
 
     out
 }
