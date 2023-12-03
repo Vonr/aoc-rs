@@ -324,12 +324,10 @@ impl<'m, T> Iterator for ColumnsIter<'m, T> {
     type Item = ColumnIter<'m, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self.matrix.column(self.index);
-        if next.is_some() {
-            self.index += 1;
-        }
+        let next = self.matrix.column(self.index)?;
+        self.index += 1;
 
-        next
+        Some(next)
     }
 }
 
