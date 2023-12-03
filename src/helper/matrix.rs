@@ -1,10 +1,8 @@
 use std::{
-    fmt::{write, Debug, Display},
-    marker::PhantomData,
-    mem::ManuallyDrop,
+    cell::Cell,
+    fmt::Debug,
     ops::{Index, IndexMut},
-    ptr::NonNull,
-    slice::SliceIndex,
+    slice::ChunksExactMut,
 };
 
 pub struct Matrix<T> {
@@ -133,11 +131,8 @@ impl<T> Matrix<T> {
     }
 
     pub fn iter_rows_mut(&mut self) -> RowsIterMut<'_, T> {
-        RowsIterMut {
-            matrix: self,
-            index: 0,
-            _marker: PhantomData,
-        }
+        let columns = self.columns();
+        RowsIterMut(self.inner.chunks_exact_mut(columns))
     }
 
     pub fn column(&self, column: usize) -> Option<ColumnIter<'_, T>> {
@@ -164,10 +159,7 @@ impl<T> Matrix<T> {
     }
 
     pub fn iter_columns_mut(&mut self) -> ColumnsIterMut<'_, T> {
-        ColumnsIterMut {
-            matrix: self,
-            index: 0,
-        }
+        ColumnsIterMut::new(self)
     }
 }
 
@@ -246,11 +238,7 @@ impl<'m, T> Iterator for RowsIter<'m, T> {
     }
 }
 
-pub struct RowsIterMut<'m, T: 'm> {
-    matrix: *mut Matrix<T>,
-    index: usize,
-    _marker: PhantomData<&'m T>,
-}
+pub struct RowsIterMut<'m, T>(ChunksExactMut<'m, T>);
 
 impl<'m, T> Iterator for RowsIterMut<'m, T> {
     type Item = &'m mut [T];
@@ -259,15 +247,7 @@ impl<'m, T> Iterator for RowsIterMut<'m, T> {
     where
         for<'a> Self: 'm,
     {
-        let mut matrix = ManuallyDrop::new(unsafe { self.matrix.read() });
-        let next = matrix.row_mut(self.index);
-        if let Some(next) = next {
-            self.index += 1;
-
-            return Some(unsafe { std::slice::from_raw_parts_mut(next.as_mut_ptr(), next.len()) });
-        }
-
-        None
+        self.0.next()
     }
 }
 
@@ -297,16 +277,29 @@ impl<'m, T> Iterator for ColumnIter<'m, T> {
     }
 }
 
-pub struct ColumnIterMut<'m, T: 'm> {
-    rows: RowsIterMut<'m, T>,
-    column: usize,
+pub struct ColumnIterMut<'m, T> {
+    slice: &'m [Cell<T>],
+    columns: usize,
+    index: usize,
 }
 
 impl<'m, T> ColumnIterMut<'m, T> {
     fn new(matrix: &'m mut Matrix<T>, column: usize) -> Self {
+        let columns = matrix.columns();
+        let slice = &mut matrix.inner[..];
+        let slice = Cell::from_mut(slice).as_slice_of_cells();
+        unsafe { Self::new_shared(slice, columns, column) }
+    }
+
+    /// # Safety
+    /// No two `ColumnIterMut`s can have the same `column` at the same time.
+    unsafe fn new_shared(slice: &'m [Cell<T>], columns: usize, column: usize) -> Self {
+        debug_assert!(column < columns);
+
         Self {
-            rows: matrix.iter_rows_mut(),
-            column,
+            slice,
+            columns,
+            index: column,
         }
     }
 }
@@ -315,11 +308,10 @@ impl<'m, T> Iterator for ColumnIterMut<'m, T> {
     type Item = &'m mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(next) = self.rows.next() {
-            Some(&mut next[self.column])
-        } else {
-            None
-        }
+        let next = self.slice.get(self.index)?;
+        self.index += self.columns;
+        // SAFETY: No other `ColumnIterMut` has this column.
+        Some(unsafe { &mut *next.as_ptr() })
     }
 }
 
@@ -342,25 +334,32 @@ impl<'m, T> Iterator for ColumnsIter<'m, T> {
 }
 
 pub struct ColumnsIterMut<'m, T> {
-    matrix: &'m mut Matrix<T>,
+    slice: &'m [Cell<T>],
+    columns: usize,
     index: usize,
+}
+
+impl<'m, T> ColumnsIterMut<'m, T> {
+    fn new(matrix: &'m mut Matrix<T>) -> Self {
+        let columns = matrix.columns();
+        let slice = &mut matrix.inner[..];
+        Self {
+            slice: Cell::from_mut(slice).as_slice_of_cells(),
+            columns,
+            index: 0,
+        }
+    }
 }
 
 impl<'m, T> Iterator for ColumnsIterMut<'m, T> {
     type Item = ColumnIterMut<'m, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index >= self.matrix.columns() {
+        if self.index >= self.columns {
             None
         } else {
-            let next = ColumnIterMut {
-                rows: RowsIterMut {
-                    matrix: self.matrix,
-                    index: 0,
-                    _marker: PhantomData,
-                },
-                column: self.index,
-            };
+            // SAFETY: `self.index` is different on each iteration.
+            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.index) };
             self.index += 1;
             Some(next)
         }
@@ -414,5 +413,16 @@ mod tests {
         for (idx, elem) in vec.into_iter().enumerate() {
             assert_eq!(elem, (idx / 3 + 2) + idx % 3 * 10);
         }
+    }
+
+    #[test]
+    fn fixed_soundness_hole() {
+        let mut matrix = Matrix::new(1);
+        matrix.push([0]);
+        matrix.push([0]);
+        let mut rows = matrix.iter_rows_mut();
+        let row0 = rows.next().unwrap();
+        let _row1 = rows.next().unwrap();
+        row0[0] = 0;
     }
 }
