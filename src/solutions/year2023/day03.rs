@@ -26,7 +26,7 @@ fn to_board(input: &[u8]) -> Vec<Vec<u8>> {
 }
 
 fn sym(b: u8) -> bool {
-    !b.is_ascii_digit() && b != b'.'
+    b != b'.' && !b.is_ascii_digit()
 }
 
 pub fn part1(input: &str) -> impl Display {
@@ -40,29 +40,32 @@ pub fn part1(input: &str) -> impl Display {
         while line.len() > skipped {
             if !line[skipped].is_ascii_digit() {
                 skipped += 1;
-            } else {
-                let mut num = [].as_slice();
-
-                for (i, b) in line.iter().enumerate().skip(skipped) {
-                    if !b.is_ascii_digit() {
-                        num = &line[skipped..i];
-                        if sym(line[skipped - 1])
-                            || sym(line[skipped + num.len()])
-                            || board[idx - 1][skipped - 1..=skipped + num.len()]
-                                .iter()
-                                .any(|&b| sym(b))
-                            || board[idx + 1][skipped - 1..=skipped + num.len()]
-                                .iter()
-                                .any(|&b| sym(b))
-                        {
-                            let num = num.as_num::<u64>();
-                            sum += num;
-                        }
-                        skipped += num.len();
-                        break;
-                    }
-                }
+                continue;
             }
+
+            let beg = skipped;
+            let mut end = beg;
+
+            while line[end + 1].is_ascii_digit() {
+                end += 1;
+            }
+
+            let mut num = &line[beg..=end];
+
+            if sym(line[skipped - 1])
+                || sym(line[skipped + num.len()])
+                || board[idx - 1][skipped - 1..=skipped + num.len()]
+                    .iter()
+                    .any(|&b| sym(b))
+                || board[idx + 1][skipped - 1..=skipped + num.len()]
+                    .iter()
+                    .any(|&b| sym(b))
+            {
+                let num = num.as_num::<u64>();
+                sum += num;
+            }
+
+            skipped += num.len();
         }
     }
 
