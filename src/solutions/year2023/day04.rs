@@ -17,11 +17,13 @@ pub fn part1(input: &str) -> impl Display {
         while left.len() > 2 {
             let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
 
+            let mut bit = b - b'0';
+
             if a != b' ' {
-                lhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
-            } else {
-                lhs |= 1 << (b - b'0');
+                bit += (a - b'0') * 10;
             }
+
+            lhs |= 1 << bit;
 
             left = &left[3..];
         }
@@ -31,11 +33,13 @@ pub fn part1(input: &str) -> impl Display {
         loop {
             let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
 
+            let mut bit = b - b'0';
+
             if a != b' ' {
-                rhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
-            } else {
-                rhs |= 1 << (b - b'0');
+                bit += (a - b'0') * 10;
             }
+
+            rhs |= 1 << bit;
 
             if right.len() <= 3 {
                 break;
@@ -67,11 +71,13 @@ pub fn part2(input: &str) -> impl Display {
         while left.len() > 2 {
             let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
 
+            let mut bit = b - b'0';
+
             if a != b' ' {
-                lhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
-            } else {
-                lhs |= 1 << (b - b'0');
+                bit += (a - b'0') * 10;
             }
+
+            lhs |= 1 << bit;
 
             left = &left[3..];
         }
@@ -81,11 +87,13 @@ pub fn part2(input: &str) -> impl Display {
         loop {
             let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
 
+            let mut bit = b - b'0';
+
             if a != b' ' {
-                rhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
-            } else {
-                rhs |= 1 << (b - b'0');
+                bit += (a - b'0') * 10;
             }
+
+            rhs |= 1 << bit;
 
             if right.len() <= 3 {
                 break;

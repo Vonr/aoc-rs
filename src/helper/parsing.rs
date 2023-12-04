@@ -137,7 +137,7 @@ impl StripPrefixUnchecked<u8> for [u8] {
 }
 
 pub trait PartialConsume<T> {
-    fn next(self: &mut &Self) -> T;
+    fn next(self: &mut &Self) -> Option<T>;
     fn skip_n(self: &mut &Self, n: usize) -> &[T];
     fn skip_to_unit<'l, 'r: 'l>(self: &mut &'r Self, unit: T) -> &'l [T];
     fn skip_to_group<'l, 'r: 'l>(self: &mut &'r Self, group: impl AsRef<[T]>) -> &'l [T];
@@ -145,16 +145,15 @@ pub trait PartialConsume<T> {
 
 impl PartialConsume<u8> for [u8] {
     #[inline]
-    fn next(self: &mut &Self) -> u8 {
-        let l = self[0];
-        *self = &self[1..];
-        l
+    fn next(self: &mut &Self) -> Option<u8> {
+        let l = self.skip_n(1);
+        l.first().copied()
     }
 
     #[inline]
     fn skip_n(self: &mut &Self, n: usize) -> &[u8] {
-        let (l, r) = self.split_at(n.min(self.len().saturating_sub(1)));
-        *self = &r[1..];
+        let (l, r) = unsafe { self.split_at_unchecked(n.min(self.len().saturating_sub(1))) };
+        *self = unsafe { r.get_unchecked(1..) };
         l
     }
 
@@ -163,8 +162,8 @@ impl PartialConsume<u8> for [u8] {
         let idx = self.find_byte(unit);
         let ret = match idx {
             Some(idx) => {
-                let (l, r) = self.split_at(idx);
-                *self = &r[1..];
+                let (l, r) = unsafe { self.split_at_unchecked(idx) };
+                *self = unsafe { r.get_unchecked(1..) };
                 l
             }
             None => {
@@ -182,8 +181,8 @@ impl PartialConsume<u8> for [u8] {
         let idx = self.find(group.as_ref());
         let ret = match idx {
             Some(idx) => {
-                let (l, r) = self.split_at(idx);
-                *self = &r[1..];
+                let (l, r) = unsafe { self.split_at_unchecked(idx) };
+                *self = unsafe { r.get_unchecked(1..) };
                 l
             }
             None => {

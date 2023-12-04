@@ -23,7 +23,7 @@ pub fn part1(input: &str) -> impl Display {
                 sets.skip_to_unit(b' ');
 
                 let num = set.skip_to_unit(b' ');
-                let ty = match set.next() {
+                let ty = match set.next().unwrap() {
                     b'r' => {
                         set.skip_n(3);
                         0
@@ -67,7 +67,7 @@ pub fn part2(input: &str) -> impl Display {
         while !line.is_empty() {
             let num = line.skip_to_unit(b' ');
 
-            let ty = match line.next() {
+            let ty = match line.next().unwrap() {
                 b'r' => {
                     line.skip_n(3);
                     0
