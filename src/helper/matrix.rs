@@ -3,7 +3,7 @@ use std::{
     fmt::Debug,
     num::NonZeroUsize,
     ops::{Index, IndexMut},
-    slice::ChunksExactMut,
+    slice::{ChunksExact, ChunksExactMut},
 };
 
 pub struct Matrix<T> {
@@ -138,10 +138,7 @@ impl<T> Matrix<T> {
     }
 
     pub fn iter_rows(&self) -> RowsIter<'_, T> {
-        RowsIter {
-            matrix: self,
-            index: 0,
-        }
+        RowsIter(self.inner.chunks_exact(self.columns()))
     }
 
     pub fn iter_rows_mut(&mut self) -> RowsIterMut<'_, T> {
@@ -168,12 +165,19 @@ impl<T> Matrix<T> {
     pub fn iter_columns(&self) -> ColumnsIter<'_, T> {
         ColumnsIter {
             matrix: self,
-            index: 0,
+            start: 0,
+            end: self.columns(),
         }
     }
 
     pub fn iter_columns_mut(&mut self) -> ColumnsIterMut<'_, T> {
         ColumnsIterMut::new(self)
+    }
+}
+
+impl<T> Default for Matrix<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -234,21 +238,25 @@ where
     }
 }
 
-pub struct RowsIter<'m, T> {
-    matrix: &'m Matrix<T>,
-    index: usize,
-}
+pub struct RowsIter<'m, T>(ChunksExact<'m, T>);
 
 impl<'m, T> Iterator for RowsIter<'m, T> {
     type Item = &'m [T];
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self.matrix.row(self.index);
-        if next.is_some() {
-            self.index += 1;
-        }
+        self.0.next()
+    }
+}
 
-        next
+impl<'m, T> DoubleEndedIterator for RowsIter<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back()
+    }
+}
+
+impl<'m, T> ExactSizeIterator for RowsIter<'m, T> {
+    fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
@@ -265,9 +273,22 @@ impl<'m, T> Iterator for RowsIterMut<'m, T> {
     }
 }
 
+impl<'m, T> DoubleEndedIterator for RowsIterMut<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.0.next_back()
+    }
+}
+
+impl<'m, T> ExactSizeIterator for RowsIterMut<'m, T> {
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+}
+
 pub struct ColumnIter<'m, T: 'm> {
     rows: RowsIter<'m, T>,
     column: usize,
+    columns_back: usize,
 }
 
 impl<'m, T> ColumnIter<'m, T> {
@@ -275,6 +296,7 @@ impl<'m, T> ColumnIter<'m, T> {
         Self {
             rows: matrix.iter_rows(),
             column,
+            columns_back: 0,
         }
     }
 }
@@ -331,15 +353,19 @@ impl<'m, T> Iterator for ColumnIterMut<'m, T> {
 
 pub struct ColumnsIter<'m, T> {
     matrix: &'m Matrix<T>,
-    index: usize,
+    start: usize,
+    end: usize,
 }
 
 impl<'m, T> Iterator for ColumnsIter<'m, T> {
     type Item = ColumnIter<'m, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self.matrix.column(self.index)?;
-        self.index += 1;
+        if self.start >= self.end {
+            return None;
+        }
+        let next = self.matrix.column(self.start)?;
+        self.start += 1;
 
         Some(next)
     }
@@ -348,7 +374,8 @@ impl<'m, T> Iterator for ColumnsIter<'m, T> {
 pub struct ColumnsIterMut<'m, T> {
     slice: &'m [Cell<T>],
     columns: usize,
-    index: usize,
+    start: usize,
+    end: usize,
 }
 
 impl<'m, T> ColumnsIterMut<'m, T> {
@@ -358,7 +385,8 @@ impl<'m, T> ColumnsIterMut<'m, T> {
         Self {
             slice: Cell::from_mut(slice).as_slice_of_cells(),
             columns,
-            index: 0,
+            start: 0,
+            end: columns,
         }
     }
 }
@@ -367,14 +395,52 @@ impl<'m, T> Iterator for ColumnsIterMut<'m, T> {
     type Item = ColumnIterMut<'m, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index >= self.columns {
+        if self.start >= self.columns || self.start >= self.end {
             None
         } else {
             // SAFETY: `self.index` is different on each iteration.
-            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.index) };
-            self.index += 1;
+            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.start) };
+            self.start += 1;
             Some(next)
         }
+    }
+}
+
+impl<'m, T> DoubleEndedIterator for ColumnsIter<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.end <= self.start {
+            return None;
+        }
+
+        self.end -= 1;
+        let next = self.matrix.column(self.end)?;
+
+        Some(next)
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ColumnsIter<'m, T> {
+    fn len(&self) -> usize {
+        self.end - self.start
+    }
+}
+
+impl<'m, T> DoubleEndedIterator for ColumnsIterMut<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.end <= self.start {
+            None
+        } else {
+            // SAFETY: `self.index` is different on each iteration.
+            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.end) };
+            self.end -= 1;
+            Some(next)
+        }
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ColumnsIterMut<'m, T> {
+    fn len(&self) -> usize {
+        self.end - self.start
     }
 }
 
@@ -436,5 +502,63 @@ mod tests {
         let row0 = rows.next().unwrap();
         let _row1 = rows.next().unwrap();
         row0[0] = 0;
+    }
+
+    #[test]
+    fn double_ended_rows() {
+        let mut matrix = Matrix::new();
+        matrix.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        matrix.push([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+        matrix.push([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
+
+        let mut rows = matrix.iter_rows();
+        assert_eq!(rows.len(), 3);
+        rows.next();
+        assert_eq!(rows.len(), 2);
+        rows.next_back();
+        assert_eq!(rows.len(), 1);
+        rows.next_back();
+        assert_eq!(rows.len(), 0);
+        rows.next();
+        assert_eq!(rows.len(), 0);
+
+        assert!(rows.next().is_none());
+        assert!(rows.next_back().is_none());
+    }
+
+    #[test]
+    fn double_ended_columns() {
+        let mut matrix = Matrix::new();
+        matrix.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        matrix.push([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+        matrix.push([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
+
+        let mut cols = matrix.iter_columns();
+        assert_eq!(cols.len(), 10);
+        cols.next();
+        assert_eq!(cols.len(), 9);
+        cols.next_back();
+        assert_eq!(cols.len(), 8);
+        cols.next_back();
+        assert_eq!(cols.len(), 7);
+        cols.next();
+        assert_eq!(cols.len(), 6);
+        cols.next();
+        assert_eq!(cols.len(), 5);
+        cols.next();
+        assert_eq!(cols.len(), 4);
+        cols.next_back();
+        assert_eq!(cols.len(), 3);
+        cols.next_back();
+        assert_eq!(cols.len(), 2);
+        cols.next_back();
+        assert_eq!(cols.len(), 1);
+        cols.next_back();
+        assert_eq!(cols.len(), 0);
+        cols.next();
+        assert_eq!(cols.len(), 0);
+
+        assert!(cols.next().is_none());
+        assert!(cols.next_back().is_none());
     }
 }
