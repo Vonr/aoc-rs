@@ -18,7 +18,7 @@ pub fn part1(input: &str) -> impl Display {
             let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
 
             if a != b' ' {
-                lhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+                lhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
             } else {
                 lhs |= 1 << (b - b'0');
             }
@@ -32,7 +32,7 @@ pub fn part1(input: &str) -> impl Display {
             let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
 
             if a != b' ' {
-                rhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+                rhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
             } else {
                 rhs |= 1 << (b - b'0');
             }
@@ -68,7 +68,7 @@ pub fn part2(input: &str) -> impl Display {
             let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
 
             if a != b' ' {
-                lhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+                lhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
             } else {
                 lhs |= 1 << (b - b'0');
             }
@@ -82,7 +82,7 @@ pub fn part2(input: &str) -> impl Display {
             let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
 
             if a != b' ' {
-                rhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+                rhs |= 1u128 << ((a - b'0') * 10 + b - b'0');
             } else {
                 rhs |= 1 << (b - b'0');
             }
