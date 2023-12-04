@@ -7,9 +7,9 @@ use nom_supreme::ParserExt;
 use crate::helper::{matrix::Matrix, parsing::BytesAsNumber};
 
 fn to_board(input: &[u8]) -> Matrix<u8> {
-    let width = input.find_byte(b'\n').unwrap() + 2;
-    let mut out = Matrix::new(width);
+    let mut out = Matrix::new();
 
+    let width = input.find_byte(b'\n').unwrap() + 2;
     let border = vec![b'.'; width];
     out.push(&border);
 

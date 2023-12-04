@@ -1,13 +1,14 @@
 use std::{
     cell::Cell,
     fmt::Debug,
+    num::NonZeroUsize,
     ops::{Index, IndexMut},
     slice::ChunksExactMut,
 };
 
 pub struct Matrix<T> {
     inner: Vec<T>,
-    width: usize,
+    width: Option<NonZeroUsize>,
 }
 
 impl<T: Debug> Debug for Matrix<T> {
@@ -17,10 +18,10 @@ impl<T: Debug> Debug for Matrix<T> {
 }
 
 impl<T> Matrix<T> {
-    pub fn new(width: usize) -> Self {
+    pub fn new() -> Self {
         Self {
             inner: Vec::new(),
-            width,
+            width: None,
         }
     }
 
@@ -37,11 +38,11 @@ impl<T> Matrix<T> {
     }
 
     pub fn columns(&self) -> usize {
-        self.width
+        self.width.map(|w| w.get()).unwrap_or(0)
     }
 
     pub fn width(&self) -> usize {
-        self.width
+        self.width.map(|w| w.get()).unwrap_or(0)
     }
 
     pub fn rows(&self) -> usize {
@@ -71,9 +72,12 @@ impl<T> Matrix<T> {
         T: Clone,
     {
         let row = row.as_ref();
-        if row.len() != self.width() {
+
+        if self.width() == 0 {
+            self.width = NonZeroUsize::new(row.len());
+        } else if row.len() != self.width() {
             panic!(
-                "Tried to push row with different width. {} != {}",
+                "Tried to push row of length {} Matrix of width {}.",
                 self.width(),
                 row.len()
             );
@@ -89,8 +93,14 @@ impl<T> Matrix<T> {
     {
         let row: &[T] = row.as_ref();
 
-        if row.len() != self.width() {
-            panic!("Tried to push row with different width.")
+        if self.width() == 0 {
+            self.width = NonZeroUsize::new(row.len());
+        } else if row.len() != self.width() {
+            panic!(
+                "Tried to insert row of length {} Matrix of width {}.",
+                self.width(),
+                row.len()
+            );
         }
 
         self.inner.splice(at..at, row.iter().cloned());
@@ -99,7 +109,11 @@ impl<T> Matrix<T> {
     #[track_caller]
     pub fn remove(&mut self, row: usize) {
         if row >= self.rows() {
-            panic!("Tried to remove non-existent row.");
+            panic!(
+                "Tried to remove row at index {} from Matrix with {} rows.",
+                row,
+                self.rows(),
+            );
         }
 
         self.inner
@@ -211,7 +225,7 @@ where
             let change = self.elements() - initial_len;
             if change != self.width() {
                 panic!(
-                    "Tried to extend with iterator of different width. {} != {}",
+                    "Tried to extend Matrix of width {} with iterator of width {}.",
                     self.width(),
                     change
                 );
@@ -370,7 +384,7 @@ mod tests {
 
     #[test]
     fn iter_rows_mut() {
-        let mut matrix = Matrix::new(10);
+        let mut matrix = Matrix::new();
         matrix.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         matrix.push([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
         matrix.push([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
@@ -389,7 +403,7 @@ mod tests {
 
     #[test]
     fn iter_columns_mut() {
-        let mut matrix = Matrix::new(3);
+        let mut matrix = Matrix::new();
         matrix.push([1, 11, 21]);
         matrix.push([2, 12, 22]);
         matrix.push([3, 13, 23]);
@@ -415,7 +429,7 @@ mod tests {
 
     #[test]
     fn fixed_soundness_hole() {
-        let mut matrix = Matrix::new(1);
+        let mut matrix = Matrix::new();
         matrix.push([0]);
         matrix.push([0]);
         let mut rows = matrix.iter_rows_mut();
