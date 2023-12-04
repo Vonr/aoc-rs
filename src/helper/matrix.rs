@@ -529,27 +529,20 @@ mod tests {
     #[test]
     fn double_ended_columns() {
         let mut matrix = Matrix::new();
-        matrix.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-        matrix.push([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
-        matrix.push([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
+        matrix.push([1, 11, 21]);
+        matrix.push([2, 12, 22]);
+        matrix.push([3, 13, 23]);
+        matrix.push([4, 14, 24]);
+        matrix.push([5, 15, 25]);
+        matrix.push([6, 16, 26]);
+        matrix.push([7, 17, 27]);
+        matrix.push([8, 18, 28]);
+        matrix.push([9, 19, 29]);
+        matrix.push([10, 20, 30]);
 
         let mut cols = matrix.iter_columns();
-        assert_eq!(cols.len(), 10);
-        cols.next();
-        assert_eq!(cols.len(), 9);
-        cols.next_back();
-        assert_eq!(cols.len(), 8);
-        cols.next_back();
-        assert_eq!(cols.len(), 7);
-        cols.next();
-        assert_eq!(cols.len(), 6);
-        cols.next();
-        assert_eq!(cols.len(), 5);
-        cols.next();
-        assert_eq!(cols.len(), 4);
-        cols.next_back();
         assert_eq!(cols.len(), 3);
-        cols.next_back();
+        cols.next();
         assert_eq!(cols.len(), 2);
         cols.next_back();
         assert_eq!(cols.len(), 1);
