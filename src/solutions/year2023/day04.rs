@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, ops::BitOr};
 
 use bstr::ByteSlice;
 
@@ -6,37 +6,47 @@ use crate::helper::parsing::{BytesAsNumber, PartialConsume};
 
 pub fn part1(input: &str) -> impl Display {
     let mut input = input.as_bytes();
-    let mut lhs = Vec::new();
     let mut sum: u32 = 0;
 
     for mut line in input.lines() {
         line.skip_to_unit(b':');
-        line.skip_to_unit(b' ');
+        line = &line[1..];
+        let mut left = line.skip_to_unit(b'|');
 
-        let left = line.skip_to_unit(b'|');
+        let mut lhs: u128 = 0;
+        while left.len() > 2 {
+            let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
 
-        lhs.extend(
-            left.split(|&b| b == b' ')
-                .filter(|bs| !bs.is_empty())
-                .map(|bs| bs.as_num::<u32>()),
-        );
-
-        let mut res = 0;
-
-        for num in line
-            .split(|&b| b == b' ')
-            .filter(|bs| !bs.is_empty())
-            .map(|bs| bs.as_num::<u32>())
-        {
-            if !lhs.contains(&num) {
-                continue;
+            if a != b' ' {
+                lhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+            } else {
+                lhs |= 1 << (b - b'0');
             }
-            res += res.max(1)
+
+            left = &left[3..];
         }
 
-        lhs.clear();
+        let mut rhs = 0;
+        let mut right = &line[1..];
+        loop {
+            let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
 
-        sum += res;
+            if a != b' ' {
+                rhs |= 1u128 << ((a - b'0') as u32 * 10 + (b - b'0') as u32);
+            } else {
+                rhs |= 1 << (b - b'0');
+            }
+
+            if right.len() <= 3 {
+                break;
+            }
+            right = &right[3..];
+        }
+
+        let z = (lhs & rhs).count_ones();
+        if z != 0 {
+            sum += 1u32 << (z - 1);
+        }
     }
 
     sum
@@ -55,7 +65,7 @@ pub fn part2(input: &str) -> impl Display {
         let left = line.skip_to_unit(b'|');
 
         let mut lhs: Vec<_> = left
-            .split(|&b| b == b' ')
+            .split_str(b" ")
             .filter(|bs| !bs.is_empty())
             .map(|bs| bs.as_num::<u32>())
             .collect();

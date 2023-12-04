@@ -1,3 +1,4 @@
+#![feature(array_chunks)]
 #![feature(iter_array_chunks)]
 #![feature(array_windows)]
 #![feature(const_for)]
