@@ -25,12 +25,35 @@ impl<T> Matrix<T> {
         }
     }
 
+    /// Get inner Vec that backs the Matrix.
     pub fn into_vec(self) -> Vec<T> {
         self.inner
     }
 
+    /// Get a mutable reference to the inner Vec that backs the Matrix.
+    ///
+    /// # Safety
+    /// Caller must not mutate the Vec in such a way that the Matrix becomes invalid.
+    pub unsafe fn as_mut_vec(&mut self) -> &mut Vec<T> {
+        &mut self.inner
+    }
+
+    /// The number of elements - not rows, that the Matrix can still fit.
+    ///
+    /// If you want the capacity of rows that the Matrix can still fit instead, use [`Matrix::row_capacity`].
     pub fn capacity(&self) -> usize {
         self.inner.capacity()
+    }
+
+    /// The number of rows - not elements, that the Matrix can still fit.
+    ///
+    /// If you want the capacity of elements that the Matrix can still fit instead, use [`Matrix::capacity`].
+    pub fn row_capacity(&self) -> usize {
+        if self.inner.capacity() == 0 || self.width() == 0 {
+            return 0;
+        }
+
+        self.inner.capacity() / self.width()
     }
 
     pub fn elements(&self) -> usize {
@@ -84,6 +107,29 @@ impl<T> Matrix<T> {
         }
 
         self.inner.extend_from_slice(row);
+    }
+
+    /// Pushes a row without checking if the new row is of the correct length or if there is
+    /// enough capacity in the Matrix for the new row.
+    ///
+    /// # Safety
+    ///
+    /// Caller must not give a row with a length different than the Matrix's width.
+    /// `matrix.width() == row.len()`
+    ///
+    /// Caller must ensure that there is enough capacity for the new row.
+    /// `matrix.row_capacity() >= 1`
+    pub unsafe fn push_unchecked(&mut self, row: impl AsRef<[T]>)
+    where
+        T: Clone,
+    {
+        let row = row.as_ref();
+
+        if self.width() == 0 {
+            self.width = NonZeroUsize::new(row.len());
+        }
+
+        self.inner.extend_from_slice_unchecked(row);
     }
 
     #[track_caller]
@@ -495,6 +541,21 @@ impl<'m, T> DoubleEndedIterator for ColumnsIterMut<'m, T> {
 impl<'m, T> ExactSizeIterator for ColumnsIterMut<'m, T> {
     fn len(&self) -> usize {
         self.end - self.start
+    }
+}
+
+trait ExtendFromSliceUnchecked<T> {
+    unsafe fn extend_from_slice_unchecked(&mut self, slice: &[T]);
+}
+
+impl<T> ExtendFromSliceUnchecked<T> for Vec<T> {
+    #[inline]
+    unsafe fn extend_from_slice_unchecked(&mut self, slice: &[T]) {
+        let len = self.len();
+        let amt = slice.len();
+
+        std::ptr::copy_nonoverlapping(slice.as_ptr(), self.as_mut_ptr().add(len), amt);
+        self.set_len(len + amt);
     }
 }
 
