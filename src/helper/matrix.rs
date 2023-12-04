@@ -288,7 +288,6 @@ impl<'m, T> ExactSizeIterator for RowsIterMut<'m, T> {
 pub struct ColumnIter<'m, T: 'm> {
     rows: RowsIter<'m, T>,
     column: usize,
-    columns_back: usize,
 }
 
 impl<'m, T> ColumnIter<'m, T> {
@@ -296,7 +295,6 @@ impl<'m, T> ColumnIter<'m, T> {
         Self {
             rows: matrix.iter_rows(),
             column,
-            columns_back: 0,
         }
     }
 }
@@ -313,29 +311,48 @@ impl<'m, T> Iterator for ColumnIter<'m, T> {
     }
 }
 
+impl<'m, T> DoubleEndedIterator for ColumnIter<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if let Some(next) = self.rows.next_back() {
+            Some(&next[self.column])
+        } else {
+            None
+        }
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ColumnIter<'m, T> {
+    fn len(&self) -> usize {
+        self.rows.len()
+    }
+}
+
 pub struct ColumnIterMut<'m, T> {
     slice: &'m [Cell<T>],
     columns: usize,
-    index: usize,
+    start: usize,
+    end: usize,
 }
 
 impl<'m, T> ColumnIterMut<'m, T> {
     fn new(matrix: &'m mut Matrix<T>, column: usize) -> Self {
         let columns = matrix.columns();
+        let rows = matrix.rows();
         let slice = &mut matrix.inner[..];
         let slice = Cell::from_mut(slice).as_slice_of_cells();
-        unsafe { Self::new_shared(slice, columns, column) }
+        unsafe { Self::new_shared(slice, columns, rows, column) }
     }
 
     /// # Safety
     /// No two `ColumnIterMut`s can have the same `column` at the same time.
-    unsafe fn new_shared(slice: &'m [Cell<T>], columns: usize, column: usize) -> Self {
+    unsafe fn new_shared(slice: &'m [Cell<T>], columns: usize, rows: usize, column: usize) -> Self {
         debug_assert!(column < columns);
 
         Self {
             slice,
             columns,
-            index: column,
+            start: column,
+            end: columns * rows + column,
         }
     }
 }
@@ -344,10 +361,33 @@ impl<'m, T> Iterator for ColumnIterMut<'m, T> {
     type Item = &'m mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self.slice.get(self.index)?;
-        self.index += self.columns;
+        if self.start >= self.end {
+            return None;
+        }
+
+        let next = self.slice.get(self.start)?;
+        self.start += self.columns;
         // SAFETY: No other `ColumnIterMut` has this column.
         Some(unsafe { &mut *next.as_ptr() })
+    }
+}
+
+impl<'m, T> DoubleEndedIterator for ColumnIterMut<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.end <= self.start {
+            return None;
+        }
+
+        self.end -= self.columns;
+        let next = self.slice.get(self.end)?;
+        // SAFETY: No other `ColumnIterMut` has this column.
+        Some(unsafe { &mut *next.as_ptr() })
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ColumnIterMut<'m, T> {
+    fn len(&self) -> usize {
+        (self.end - self.start) / self.columns
     }
 }
 
@@ -399,7 +439,14 @@ impl<'m, T> Iterator for ColumnsIterMut<'m, T> {
             None
         } else {
             // SAFETY: `self.index` is different on each iteration.
-            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.start) };
+            let next = unsafe {
+                ColumnIterMut::new_shared(
+                    self.slice,
+                    self.columns,
+                    self.slice.len() / self.columns,
+                    self.start,
+                )
+            };
             self.start += 1;
             Some(next)
         }
@@ -430,9 +477,16 @@ impl<'m, T> DoubleEndedIterator for ColumnsIterMut<'m, T> {
         if self.end <= self.start {
             None
         } else {
-            // SAFETY: `self.index` is different on each iteration.
-            let next = unsafe { ColumnIterMut::new_shared(self.slice, self.columns, self.end) };
             self.end -= 1;
+            // SAFETY: `self.index` is different on each iteration.
+            let next = unsafe {
+                ColumnIterMut::new_shared(
+                    self.slice,
+                    self.columns,
+                    self.slice.len() / self.columns,
+                    self.end,
+                )
+            };
             Some(next)
         }
     }
@@ -553,5 +607,27 @@ mod tests {
 
         assert!(cols.next().is_none());
         assert!(cols.next_back().is_none());
+    }
+
+    #[test]
+    fn double_ended_column() {
+        let mut matrix = Matrix::new();
+        matrix.push([1]);
+        matrix.push([2]);
+        matrix.push([3]);
+
+        let mut col = matrix.column(0).unwrap();
+        assert_eq!(col.len(), 3);
+        col.next();
+        assert_eq!(col.len(), 2);
+        col.next_back();
+        assert_eq!(col.len(), 1);
+        col.next_back();
+        assert_eq!(col.len(), 0);
+        col.next();
+        assert_eq!(col.len(), 0);
+
+        assert!(col.next().is_none());
+        assert!(col.next_back().is_none());
     }
 }
