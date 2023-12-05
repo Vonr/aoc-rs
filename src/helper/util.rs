@@ -1,4 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    ops::Shr,
+    simd::{u16x2, u16x4, u16x8, SimdUint},
+};
 
 pub trait Unique {
     fn unique(&self) -> bool;
@@ -50,11 +54,57 @@ impl Unique for [u8] {
     }
 }
 
+#[inline(always)]
+pub fn hash_ascii_digit_pair(digits: [u8; 2]) -> u8 {
+    let n = u16::from_le_bytes(digits) as u32;
+    (((n * 0x10a) >> 8) as u8) & 0x7f
+}
+
+#[inline(always)]
+pub fn hash_4_separated_ascii_digit_pairs(digits: [u8; 11]) -> [u8; 4] {
+    use std::arch::is_x86_feature_detected;
+    use std::arch::x86_64::*;
+
+    #[target_feature(enable = "sse2")]
+    unsafe fn inner(digits: [u8; 11]) -> [u8; 4] {
+        let init = _mm_set_epi32(
+            i16::from_le_bytes([digits[9], digits[10]]) as i32,
+            i16::from_le_bytes([digits[6], digits[7]]) as i32,
+            i16::from_le_bytes([digits[3], digits[4]]) as i32,
+            i16::from_le_bytes([digits[0], digits[1]]) as i32,
+        );
+
+        let mul = _mm_mullo_epi32(init, _mm_set1_epi32(0x10a));
+        let shr = _mm_srai_epi32(mul, 8);
+        let and = _mm_and_si128(shr, _mm_set1_epi32(0x7f));
+        let shuffled = _mm_shuffle_epi8(
+            and,
+            _mm_set_epi8(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, 8, 4, 0),
+        );
+
+        let mut out = [0; 4];
+        _mm_storeu_epi8(out.as_mut_ptr(), shuffled);
+
+        std::mem::transmute(out)
+    }
+
+    // if is_x86_feature_detected!("sse") && cfg!(target_feature = "sse2") {
+    // unsafe { inner(digits) }
+    // } else {
+    [
+        hash_ascii_digit_pair([digits[0], digits[1]]),
+        hash_ascii_digit_pair([digits[3], digits[4]]),
+        hash_ascii_digit_pair([digits[6], digits[7]]),
+        hash_ascii_digit_pair([digits[9], digits[10]]),
+    ]
+    // }
+}
+
 #[cfg(test)]
 mod tests {
     use std::array;
 
-    use crate::helper::util::Unique;
+    use super::*;
 
     #[test]
     #[cfg(not(miri))]
@@ -72,6 +122,16 @@ mod tests {
             }
             all[i] = i as u8;
             assert!(all.unique());
+        }
+    }
+
+    #[test]
+    fn ascii_digit_pairs() {
+        let input = *b"88 52 87  9";
+        let input_two = [*b"88", *b"52", *b"87", *b" 9"];
+        let hash = hash_4_separated_ascii_digit_pairs(input);
+        for (input, hash) in input_two.into_iter().zip(hash.into_iter()) {
+            assert_eq!(hash_ascii_digit_pair(input), hash);
         }
     }
 }

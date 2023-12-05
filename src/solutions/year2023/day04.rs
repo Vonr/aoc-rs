@@ -2,7 +2,10 @@ use std::{fmt::Display, ops::BitOr};
 
 use bstr::ByteSlice;
 
-use crate::helper::parsing::{BytesAsNumber, PartialConsume};
+use crate::helper::{
+    parsing::{BytesAsNumber, PartialConsume},
+    util::{hash_4_separated_ascii_digit_pairs, hash_ascii_digit_pair},
+};
 
 pub fn part1(input: &str) -> impl Display {
     let mut input = input.as_bytes();
@@ -14,16 +17,19 @@ pub fn part1(input: &str) -> impl Display {
         let mut left = line.skip_to_unit(b'|');
 
         let mut lhs: u128 = 0;
-        while left.len() > 2 {
-            let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
+        while left.len() > 11 {
+            let hashes = hash_4_separated_ascii_digit_pairs(left[..11].try_into().unwrap());
 
-            let mut bit = b - b'0';
-
-            if a != b' ' {
-                bit += (a - b'0') * 10;
+            for hash in hashes {
+                lhs |= 1u128 << hash;
             }
 
-            lhs |= 1 << bit;
+            left = &left[12..];
+        }
+
+        while left.len() > 2 {
+            let hash = hash_ascii_digit_pair(left[..2].try_into().unwrap());
+            lhs |= 1 << hash;
 
             left = &left[3..];
         }
@@ -31,15 +37,8 @@ pub fn part1(input: &str) -> impl Display {
         let mut rhs = 0;
         let mut right = &line[1..];
         loop {
-            let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
-
-            let mut bit = b - b'0';
-
-            if a != b' ' {
-                bit += (a - b'0') * 10;
-            }
-
-            rhs |= 1 << bit;
+            let n = u16::from_le_bytes(right[..2].try_into().unwrap()) as u32;
+            rhs |= 1 << ((n * 0x10a) >> 8 & 0x7f);
 
             if right.len() <= 3 {
                 break;
@@ -68,32 +67,38 @@ pub fn part2(input: &str) -> impl Display {
         let mut left = line.skip_to_unit(b'|');
 
         let mut lhs: u128 = 0;
+        // while left.len() > 23 {
+        //     let hashes = hash_8_separated_ascii_digit_pairs(left[..23].try_into().unwrap());
+        //
+        //     for hash in hashes {
+        //         lhs |= 1u128 << hash;
+        //     }
+        //
+        //     left = &left[24..];
+        // }
+
         while left.len() > 2 {
-            let [a, b]: [u8; 2] = left[..2].try_into().unwrap();
-
-            let mut bit = b - b'0';
-
-            if a != b' ' {
-                bit += (a - b'0') * 10;
-            }
-
-            lhs |= 1 << bit;
+            let n = u16::from_le_bytes(left[..2].try_into().unwrap()) as u32;
+            lhs |= 1 << ((n * 0x10a) >> 8 & 0x7f);
 
             left = &left[3..];
         }
 
         let mut rhs = 0;
         let mut right = &line[1..];
+        // while right.len() > 23 {
+        //     let hashes = hash_8_separated_ascii_digit_pairs(right[..23].try_into().unwrap());
+        //
+        //     for hash in hashes {
+        //         rhs |= 1u128 << hash;
+        //     }
+        //
+        //     right = &right[24..];
+        // }
+
         loop {
-            let [a, b]: [u8; 2] = right[..2].try_into().unwrap();
-
-            let mut bit = b - b'0';
-
-            if a != b' ' {
-                bit += (a - b'0') * 10;
-            }
-
-            rhs |= 1 << bit;
+            let n = u16::from_le_bytes(right[..2].try_into().unwrap()) as u32;
+            rhs |= 1 << ((n * 0x10a) >> 8 & 0x7f);
 
             if right.len() <= 3 {
                 break;
