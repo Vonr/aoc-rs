@@ -14,6 +14,7 @@
 #![feature(slice_split_at_unchecked)]
 #![feature(maybe_uninit_uninit_array)]
 #![feature(maybe_uninit_array_assume_init)]
+#![feature(int_roundings)]
 #![allow(unused)]
 
 pub mod helper;

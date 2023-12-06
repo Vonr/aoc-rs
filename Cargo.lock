@@ -16,6 +16,7 @@ dependencies = [
  "bstr",
  "nom",
  "nom-supreme",
+ "num-traits",
  "once_cell",
  "pathfinding",
  "rayon",

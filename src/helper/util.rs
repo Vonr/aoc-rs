@@ -1,8 +1,12 @@
 use std::{
+    cmp::Ordering,
     collections::{HashMap, HashSet},
-    ops::Shr,
+    fmt::Display,
+    ops::{Add, Div, Range, Shr, Sub},
     simd::{u16x2, u16x4, u16x8, SimdUint},
 };
+
+use num_traits::PrimInt;
 
 pub trait Unique {
     fn unique(&self) -> bool;
@@ -98,6 +102,37 @@ pub fn hash_4_separated_ascii_digit_pairs(digits: [u8; 11]) -> [u8; 4] {
         hash_ascii_digit_pair([digits[9], digits[10]]),
     ]
     // }
+}
+
+pub fn binary_search_by<T>(mut low: T, mut high: T, pred: impl Fn(T) -> Ordering) -> Option<T>
+where
+    T: PrimInt,
+{
+    while low < high {
+        let mid = (low + high) >> 1;
+        match pred(mid) {
+            Ordering::Less => low = mid + T::one(),
+            Ordering::Equal => return Some(mid),
+            Ordering::Greater => high = mid - T::one(),
+        }
+    }
+
+    None
+}
+
+pub fn partition_point_high<T>(mut range: Range<T>, pred: impl Fn(T) -> bool) -> T
+where
+    T: PrimInt,
+{
+    while range.start != range.end {
+        let mid = range.start + ((range.end - range.start) >> 1);
+        if pred(mid) {
+            range.start = mid + T::one();
+        } else {
+            range.end = mid;
+        }
+    }
+    range.start
 }
 
 #[cfg(test)]
