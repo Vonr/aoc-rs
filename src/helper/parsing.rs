@@ -6,6 +6,7 @@ use std::{
 };
 
 use bstr::ByteSlice;
+use num_traits::{AsPrimitive, PrimInt, Signed};
 
 pub struct Columns<T, U, V, I: Iterator<Item = T>, F: Fn(T, usize) -> Option<U>> {
     iter: I,
@@ -74,38 +75,70 @@ where
 }
 
 pub trait BytesAsNumber {
-    fn as_num<T: From<u8> + Add<Output = T> + Mul<Output = T> + Default>(&self) -> T;
-    fn as_signed_num<T>(&self) -> T
-    where
-        T: From<u8> + Add<Output = T> + Mul<Output = T> + Default,
-        T: Neg<Output = T>;
+    fn as_num<T: PrimInt + 'static>(&self) -> T;
+    fn as_signed_num<T: PrimInt + Signed + 'static>(&self) -> T;
+    fn as_num_checked<T: PrimInt + 'static>(&self) -> T;
+    fn as_signed_num_checked<T: PrimInt + Signed + 'static>(&self) -> T;
+    fn as_nums<T: PrimInt + 'static>(&self) -> SeparatedNumbers<T>;
 }
 
 impl BytesAsNumber for [u8] {
-    fn as_num<T: From<u8> + Add<Output = T> + Mul<Output = T> + Default>(&self) -> T {
-        let mut out = T::default();
+    fn as_num<T: PrimInt + 'static>(&self) -> T {
+        let mut out = T::zero();
         for b in self {
-            out = out * T::from(10) + T::from(b & 0xf);
+            out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
         }
         out
     }
 
-    fn as_signed_num<T>(&self) -> T
-    where
-        T: From<u8> + Add<Output = T> + Mul<Output = T> + Default,
-        T: Neg<Output = T>,
-    {
-        let mut out = T::default();
+    fn as_signed_num<T: PrimInt + Signed + 'static>(&self) -> T {
+        let mut out = T::zero();
         if self[0] == b'-' {
             for b in &self[1..] {
-                out = out * T::from(10) + T::from(b & 0xf);
+                out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
             }
             -out
         } else {
             for b in self {
-                out = out * T::from(10) + T::from(b & 0xf);
+                out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
             }
             out
+        }
+    }
+
+    fn as_num_checked<T: PrimInt + 'static>(&self) -> T {
+        let mut out = T::zero();
+        for b in self {
+            if b.is_ascii_digit() {
+                out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
+            }
+        }
+        out
+    }
+
+    fn as_signed_num_checked<T: PrimInt + Signed + 'static>(&self) -> T {
+        let mut out = T::zero();
+        if self[0] == b'-' {
+            for b in &self[1..] {
+                if b.is_ascii_digit() {
+                    out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
+                }
+            }
+            -out
+        } else {
+            for b in self {
+                if b.is_ascii_digit() {
+                    out = out * T::from(10).unwrap() + T::from(b - b'0').unwrap();
+                }
+            }
+            out
+        }
+    }
+
+    fn as_nums<T: PrimInt + 'static>(&self) -> SeparatedNumbers<T> {
+        SeparatedNumbers {
+            slice: self,
+            _output: PhantomData,
         }
     }
 }
@@ -193,6 +226,43 @@ impl PartialConsume<u8> for [u8] {
         };
 
         ret
+    }
+}
+
+pub struct SeparatedNumbers<'a, Output> {
+    slice: &'a [u8],
+    _output: PhantomData<Output>,
+}
+
+impl<'a, Output> Iterator for SeparatedNumbers<'a, Output>
+where
+    Output: PrimInt + 'static + std::fmt::Display,
+{
+    type Item = Output;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while !self.slice.first()?.is_ascii_digit() {
+            if !self.slice.is_empty() {
+                self.slice = &self.slice[1..];
+            }
+        }
+
+        let mut out: Self::Item = Self::Item::zero();
+        while self
+            .slice
+            .first()
+            .map(|f| f.is_ascii_digit())
+            .unwrap_or(false)
+        {
+            out = (out * Self::Item::from(10).unwrap())
+                + Self::Item::from(self.slice[0] - b'0').unwrap();
+
+            if !self.slice.is_empty() {
+                self.slice = &self.slice[1..];
+            }
+        }
+
+        Some(out)
     }
 }
 
