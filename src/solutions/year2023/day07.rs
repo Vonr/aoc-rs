@@ -1,32 +1,47 @@
 use std::{cmp::Ordering, fmt::Display};
 
 use bstr::ByteSlice;
+use num_traits::FloatConst;
 
 use crate::helper::parsing::{BytesAsNumber, PartialConsume};
 
-fn p1_valuator(card: u8) -> u8 {
-    match card {
-        b'2'..=b'9' => (card - b'2'),
-        b'T' => 8,
-        b'J' => 9,
-        b'Q' => 10,
-        b'K' => 11,
-        b'A' => 12,
-        _ => unreachable!(),
-    }
-}
+const P1_VALUES: [u8; 91] = {
+    let mut values = [0; 91];
+    values[b'2' as usize] = 0;
+    values[b'3' as usize] = 1;
+    values[b'4' as usize] = 2;
+    values[b'5' as usize] = 3;
+    values[b'6' as usize] = 4;
+    values[b'7' as usize] = 5;
+    values[b'8' as usize] = 6;
+    values[b'9' as usize] = 7;
+    values[b'T' as usize] = 8;
+    values[b'J' as usize] = 9;
+    values[b'Q' as usize] = 10;
+    values[b'K' as usize] = 11;
+    values[b'A' as usize] = 12;
 
-fn p2_valuator(card: u8) -> u8 {
-    match card {
-        b'J' => 0,
-        b'2'..=b'9' => (card - b'1'),
-        b'T' => 9,
-        b'Q' => 10,
-        b'K' => 11,
-        b'A' => 12,
-        _ => unreachable!(),
-    }
-}
+    values
+};
+
+const P2_VALUES: [u8; 91] = {
+    let mut values = [0; 91];
+    values[b'J' as usize] = 0;
+    values[b'2' as usize] = 1;
+    values[b'3' as usize] = 2;
+    values[b'4' as usize] = 3;
+    values[b'5' as usize] = 4;
+    values[b'6' as usize] = 5;
+    values[b'7' as usize] = 6;
+    values[b'8' as usize] = 7;
+    values[b'9' as usize] = 8;
+    values[b'T' as usize] = 9;
+    values[b'Q' as usize] = 10;
+    values[b'K' as usize] = 11;
+    values[b'A' as usize] = 12;
+
+    values
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 enum Type {
@@ -40,50 +55,17 @@ enum Type {
 }
 
 #[derive(Debug, Clone, Copy)]
-struct Cards([u8; 5]);
-
-impl PartialEq for Cards {
-    fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
-    }
-}
-
-impl PartialOrd for Cards {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self == other {
-            return Some(Ordering::Equal);
-        }
-
-        for (&a, &b) in self.0.iter().zip(other.0.iter()) {
-            if a > b {
-                return Some(Ordering::Less);
-            }
-
-            if a < b {
-                return Some(Ordering::Greater);
-            }
-        }
-
-        unreachable!()
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
 struct Hand {
     ty: Type,
-    cards: Cards,
+    cards: [u8; 5],
 }
 
 impl Hand {
-    fn from_bytes(
-        bytes: [u8; 5],
-        valuator: impl Fn(u8) -> u8,
-        typer: impl Fn([u8; 5]) -> Type,
-    ) -> Self {
-        let valued = bytes.map(valuator);
+    fn from_bytes(bytes: [u8; 5], values: [u8; 91], typer: impl Fn([u8; 5]) -> Type) -> Self {
+        let valued = bytes.map(|b| values[b as usize]);
         Self {
             ty: typer(valued),
-            cards: Cards(valued),
+            cards: valued,
         }
     }
 }
@@ -101,14 +83,14 @@ impl PartialOrd for Hand {
             ord => return ord,
         }
 
-        self.cards.partial_cmp(&other.cards)
+        other.cards.partial_cmp(&self.cards)
     }
 }
 
 fn p1_typer(valued: [u8; 5]) -> Type {
     use Type::*;
 
-    let mut cards: [u8; 14] = [0; 14];
+    let mut cards: [u8; 13] = [0; 13];
     let mut kinds = 0;
     for (idx, card) in valued.iter().copied().enumerate() {
         let v = card as usize;
@@ -151,7 +133,7 @@ fn p1_typer(valued: [u8; 5]) -> Type {
 fn p2_typer(valued: [u8; 5]) -> Type {
     use Type::*;
 
-    let mut cards: [u8; 14] = [0; 14];
+    let mut cards: [u8; 13] = [0; 13];
     let mut kinds = 0;
     for (idx, card) in valued.iter().copied().enumerate() {
         let v = card as usize;
@@ -206,7 +188,7 @@ pub fn part1(input: &str) -> impl Display {
     let mut hands = Vec::new();
     for mut line in input.lines() {
         let hand: [u8; 5] = line.skip_to_unit(b' ').try_into().unwrap();
-        let hand = Hand::from_bytes(hand, p1_valuator, p1_typer);
+        let hand = Hand::from_bytes(hand, P1_VALUES, p1_typer);
         let bid = line.as_num::<u32>();
 
         hands.push((hand, bid));
@@ -229,7 +211,7 @@ pub fn part2(input: &str) -> impl Display {
     let mut hands = Vec::new();
     for mut line in input.lines() {
         let hand: [u8; 5] = line.skip_to_unit(b' ').try_into().unwrap();
-        let hand = Hand::from_bytes(hand, p2_valuator, p2_typer);
+        let hand = Hand::from_bytes(hand, P2_VALUES, p2_typer);
         let bid = line.as_num::<u32>();
 
         hands.push((hand, bid));
