@@ -124,8 +124,6 @@ impl PartialOrd for Hand {
 }
 
 fn p1_typer(valued: [u8; 5]) -> Type {
-    use Type::*;
-
     let mut cards: [u8; 13] = [0; 13];
     let mut kinds = 0;
     for (idx, card) in valued.iter().copied().enumerate() {
@@ -141,8 +139,6 @@ fn p1_typer(valued: [u8; 5]) -> Type {
 }
 
 fn p2_typer(valued: [u8; 5]) -> Type {
-    use Type::*;
-
     let mut cards: [u8; 13] = [0; 13];
     let mut kinds = 0;
     let mut max = 0;
