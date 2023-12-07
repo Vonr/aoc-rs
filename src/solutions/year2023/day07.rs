@@ -54,6 +54,44 @@ enum Type {
     HighC,
 }
 
+impl Type {
+    fn from_cards_and_kinds(cards: [u8; 13], kinds: usize) -> Self {
+        use Type::*;
+
+        for num in cards {
+            if num < 2 {
+                continue;
+            }
+
+            if num == 5 {
+                return FiveOak;
+            }
+
+            if num == 4 {
+                return FourOak;
+            }
+
+            if kinds == 2 && (num == 2 || num == 3) {
+                return FullH;
+            }
+
+            if kinds == 3 && num == 3 {
+                return ThreeOak;
+            }
+
+            if kinds == 3 && num == 2 {
+                return TwoP;
+            }
+
+            if kinds == 4 && num == 2 {
+                return OneP;
+            }
+        }
+
+        HighC
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 struct Hand {
     ty: Type,
@@ -77,13 +115,11 @@ impl PartialEq for Hand {
 }
 
 impl PartialOrd for Hand {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match self.ty.partial_cmp(&other.ty) {
-            Some(core::cmp::Ordering::Equal) => (),
-            ord => return ord,
+            Some(Ordering::Equal) => other.cards.partial_cmp(&self.cards),
+            ord => ord,
         }
-
-        other.cards.partial_cmp(&self.cards)
     }
 }
 
@@ -99,35 +135,9 @@ fn p1_typer(valued: [u8; 5]) -> Type {
         if num == 1 {
             kinds += 1;
         }
-
-        if num == 5 {
-            return FiveOak;
-        }
     }
 
-    for num in cards {
-        if num == 4 {
-            return FourOak;
-        }
-
-        if kinds == 2 && (num == 2 || num == 3) {
-            return FullH;
-        }
-
-        if kinds == 3 && num == 3 {
-            return ThreeOak;
-        }
-
-        if kinds == 3 && num == 2 {
-            return TwoP;
-        }
-
-        if kinds == 4 && num == 2 {
-            return OneP;
-        }
-    }
-
-    HighC
+    Type::from_cards_and_kinds(cards, kinds)
 }
 
 fn p2_typer(valued: [u8; 5]) -> Type {
@@ -135,6 +145,8 @@ fn p2_typer(valued: [u8; 5]) -> Type {
 
     let mut cards: [u8; 13] = [0; 13];
     let mut kinds = 0;
+    let mut max = 0;
+    let mut max_idx = 0;
     for (idx, card) in valued.iter().copied().enumerate() {
         let v = card as usize;
         cards[v] += 1;
@@ -142,88 +154,49 @@ fn p2_typer(valued: [u8; 5]) -> Type {
         if num == 1 {
             kinds += 1;
         }
+
+        if v != 0 && num > max {
+            max = num;
+            max_idx = v;
+        }
     }
 
-    if cards[0] != 0 {
-        let max = *cards[1..].iter().max().unwrap();
-        let max_idx = cards[1..].iter().position(|&num| num == max).unwrap() + 1;
-
+    if cards[0] != 0 && max_idx != 0 {
         cards[max_idx] += cards[0];
         cards[0] = 0;
         kinds -= 1;
     }
 
-    for num in cards {
-        if num == 5 {
-            return FiveOak;
-        }
+    Type::from_cards_and_kinds(cards, kinds)
+}
 
-        if num == 4 {
-            return FourOak;
-        }
+fn solve(input: &str, card_values: [u8; 91], card_typer: impl Fn([u8; 5]) -> Type) -> impl Display {
+    let input = input.as_bytes();
 
-        if kinds == 2 && (num == 2 || num == 3) {
-            return FullH;
-        }
+    let mut hands = Vec::new();
+    for mut line in input.lines() {
+        let hand: [u8; 5] = line.skip_to_unit(b' ').try_into().unwrap();
+        let hand = Hand::from_bytes(hand, card_values, &card_typer);
+        let bid = line.as_num::<u32>();
 
-        if kinds == 3 && num == 3 {
-            return ThreeOak;
-        }
-
-        if kinds == 3 && num == 2 {
-            return TwoP;
-        }
-
-        if kinds == 4 && num == 2 {
-            return OneP;
-        }
+        hands.push((hand, bid));
     }
 
-    HighC
+    hands.sort_unstable_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+
+    let mut ans = 0;
+    let len = hands.len();
+    for (idx, (hand, bid)) in hands.into_iter().enumerate() {
+        ans += bid * (len - idx) as u32;
+    }
+
+    ans
 }
 
 pub fn part1(input: &str) -> impl Display {
-    let input = input.as_bytes();
-
-    let mut hands = Vec::new();
-    for mut line in input.lines() {
-        let hand: [u8; 5] = line.skip_to_unit(b' ').try_into().unwrap();
-        let hand = Hand::from_bytes(hand, P1_VALUES, p1_typer);
-        let bid = line.as_num::<u32>();
-
-        hands.push((hand, bid));
-    }
-
-    hands.sort_unstable_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-
-    let mut ans = 0;
-    let len = hands.len();
-    for (idx, (hand, bid)) in hands.into_iter().enumerate() {
-        ans += bid * (len - idx) as u32;
-    }
-
-    ans
+    solve(input, P1_VALUES, p1_typer)
 }
 
 pub fn part2(input: &str) -> impl Display {
-    let input = input.as_bytes();
-
-    let mut hands = Vec::new();
-    for mut line in input.lines() {
-        let hand: [u8; 5] = line.skip_to_unit(b' ').try_into().unwrap();
-        let hand = Hand::from_bytes(hand, P2_VALUES, p2_typer);
-        let bid = line.as_num::<u32>();
-
-        hands.push((hand, bid));
-    }
-
-    hands.sort_unstable_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-
-    let mut ans = 0;
-    let len = hands.len();
-    for (idx, (hand, bid)) in hands.into_iter().enumerate() {
-        ans += bid * (len - idx) as u32;
-    }
-
-    ans
+    solve(input, P2_VALUES, p2_typer)
 }
