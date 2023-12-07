@@ -1,8 +1,6 @@
 use std::{collections::VecDeque, fmt::Display};
 
 use bstr::ByteSlice;
-use nom::{bytes::streaming::take_while1, Parser};
-use nom_supreme::ParserExt;
 
 use crate::helper::{matrix::Matrix, parsing::BytesAsNumber};
 
