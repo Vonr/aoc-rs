@@ -1,7 +1,6 @@
 use std::{cmp::Ordering, fmt::Display};
 
 use bstr::ByteSlice;
-use num_traits::FloatConst;
 
 use crate::helper::parsing::{BytesAsNumber, PartialConsume};
 
