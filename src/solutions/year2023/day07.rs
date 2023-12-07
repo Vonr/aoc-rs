@@ -163,11 +163,8 @@ fn p2_typer(valued: [u8; 5]) -> Type {
     }
 
     if cards[0] != 0 {
-        let max_idx = cards[1..]
-            .iter()
-            .position(|&num| num == *cards[1..].iter().max().unwrap())
-            .unwrap()
-            + 1;
+        let max = *cards[1..].iter().max().unwrap();
+        let max_idx = cards[1..].iter().position(|&num| num == max).unwrap() + 1;
 
         cards[max_idx] += cards[0];
         cards[0] = 0;
