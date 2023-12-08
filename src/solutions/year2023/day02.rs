@@ -69,15 +69,15 @@ pub fn part2(input: &str) -> impl Display {
 
             let ty = match line.next().unwrap() {
                 b'r' => {
-                    line.skip_n(3);
+                    line.skip_n(2);
                     0
                 }
                 b'g' => {
-                    line.skip_n(5);
+                    line.skip_n(4);
                     1
                 }
                 b'b' => {
-                    line.skip_n(4);
+                    line.skip_n(3);
                     2
                 }
                 _ => unsafe { unreachable_unchecked() },
