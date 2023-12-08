@@ -18,6 +18,7 @@ dependencies = [
  "num-traits",
  "pathfinding",
  "rayon",
+ "rustc-hash",
 ]
 
 [[package]]

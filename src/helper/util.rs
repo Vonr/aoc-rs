@@ -4,8 +4,10 @@ use std::{
     fmt::Display,
     ops::{Add, Div, Range, Shr, Sub},
     simd::{u16x2, u16x4, u16x8, SimdUint},
+    time::{Duration, Instant},
 };
 
+use num::Integer;
 use num_traits::PrimInt;
 
 pub trait Unique {
@@ -133,6 +135,50 @@ where
         }
     }
     range.start
+}
+
+pub trait IntegerIteratorExt<T> {
+    fn gcd(self) -> Option<T>;
+    fn lcm(self) -> Option<T>;
+}
+
+impl<T, I> IntegerIteratorExt<T> for I
+where
+    T: Integer,
+    I: Iterator<Item = T>,
+{
+    fn gcd(self) -> Option<T> {
+        self.reduce(num::integer::gcd)
+    }
+
+    fn lcm(self) -> Option<T> {
+        self.reduce(num::integer::lcm)
+    }
+}
+
+#[derive(Clone, PartialEq, PartialOrd)]
+pub struct Timer(Instant);
+
+impl Timer {
+    pub fn new() -> Self {
+        Self(Instant::now())
+    }
+
+    pub fn elapsed(&self) -> Duration {
+        self.0.elapsed()
+    }
+}
+
+impl Default for Timer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Drop for Timer {
+    fn drop(&mut self) {
+        eprintln!("{:?}", self.0.elapsed());
+    }
 }
 
 #[cfg(test)]

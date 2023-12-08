@@ -10,6 +10,7 @@ num = "0.4.1"
 num-traits = "0.2.17"
 pathfinding = "4.4.0"
 rayon = "1.8.0"
+rustc-hash = "1.1.0"
 
 [dependencies.aoc_driver]
 version = "0.3.6"
