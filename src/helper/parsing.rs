@@ -80,6 +80,7 @@ pub trait BytesAsNumber {
     fn as_num_checked<T: PrimInt + 'static>(&self) -> T;
     fn as_signed_num_checked<T: PrimInt + Signed + 'static>(&self) -> T;
     fn as_nums<T: PrimInt + 'static>(&self) -> SeparatedNumbers<T>;
+    fn as_signed_nums<T: PrimInt + Signed + 'static>(&self) -> SeparatedSignedNumbers<T>;
 }
 
 impl BytesAsNumber for [u8] {
@@ -137,6 +138,13 @@ impl BytesAsNumber for [u8] {
 
     fn as_nums<T: PrimInt + 'static>(&self) -> SeparatedNumbers<T> {
         SeparatedNumbers {
+            slice: self,
+            _output: PhantomData,
+        }
+    }
+
+    fn as_signed_nums<T: PrimInt + 'static>(&self) -> SeparatedSignedNumbers<T> {
+        SeparatedSignedNumbers {
             slice: self,
             _output: PhantomData,
         }
@@ -263,6 +271,54 @@ where
         }
 
         Some(out)
+    }
+}
+
+pub struct SeparatedSignedNumbers<'a, Output> {
+    slice: &'a [u8],
+    _output: PhantomData<Output>,
+}
+
+impl<'a, Output> Iterator for SeparatedSignedNumbers<'a, Output>
+where
+    Output: PrimInt + Signed + 'static + std::fmt::Display,
+{
+    type Item = Output;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut neg = false;
+        let mut first = *self.slice.first()?;
+        while first != b'-' && !first.is_ascii_digit() {
+            if !self.slice.is_empty() {
+                self.slice = &self.slice[1..];
+            }
+            first = *self.slice.first()?;
+        }
+
+        let mut out: Self::Item = Self::Item::zero();
+        while self
+            .slice
+            .first()
+            .map(|&f| f == b'-' || f.is_ascii_digit())
+            .unwrap_or(false)
+        {
+            if self.slice[0] == b'-' {
+                neg = !neg;
+
+                if !self.slice.is_empty() {
+                    self.slice = &self.slice[1..];
+                }
+                continue;
+            }
+
+            out = (out * Self::Item::from(10).unwrap())
+                + Self::Item::from(self.slice[0] - b'0').unwrap();
+            if !self.slice.is_empty() {
+                self.slice = &self.slice[1..];
+            }
+        }
+
+        Some(if neg { -out } else { out })
     }
 }
 
