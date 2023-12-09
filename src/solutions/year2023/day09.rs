@@ -9,7 +9,6 @@ pub fn part1(input: &str) -> impl Display {
     let mut sum = 0;
 
     let mut seq = [0; 21];
-    let mut rmosts = [0; 21];
 
     for mut line in input.lines() {
         let mut seq_nums = line.as_signed_nums();
@@ -20,8 +19,7 @@ pub fn part1(input: &str) -> impl Display {
         let mut layers = 0;
 
         while !seq[..seq.len() - 1 - layers].iter().all(|&d| d == 0) {
-            let rmost = seq[seq.len() - 1 - layers];
-            rmosts[layers] = rmost;
+            sum += seq[seq.len() - 1 - layers];
 
             let mut i = 0;
             while i < seq.len() - 1 - layers {
@@ -31,16 +29,6 @@ pub fn part1(input: &str) -> impl Display {
 
             layers += 1;
         }
-
-        seq[layers] = 0;
-
-        let mut extra = 0;
-        while layers != 0 {
-            layers -= 1;
-            extra += rmosts[layers];
-        }
-
-        sum += extra;
     }
 
     sum
