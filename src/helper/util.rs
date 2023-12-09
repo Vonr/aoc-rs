@@ -2,6 +2,7 @@ use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
     fmt::Display,
+    mem::MaybeUninit,
     ops::{Add, Div, Range, Shr, Sub},
     simd::{u16x2, u16x4, u16x8, SimdUint},
     time::{Duration, Instant},
@@ -180,6 +181,57 @@ impl Drop for Timer {
         eprintln!("{:?}", self.0.elapsed());
     }
 }
+
+/// Taken from nils https://github.com/Nilstrieb/advent-of-code/blob/45b91e97187f9d59b068c9803b2756239a41a397/helper/src/ext.rs
+/// i will not use itertools i will not use itertools i will not use itertools i will not use itertools
+pub trait CollectToArray: Iterator {
+    /// Collect an iterator into a new array.
+    /// If `next` panics, collected items are leaked. Too bad!
+    fn collect_array<const N: usize>(&mut self) -> Option<[Self::Item; N]> {
+        // SAFETY: Uninit is valid for MaybeUninit
+        let mut array: [MaybeUninit<Self::Item>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
+
+        for a in &mut array {
+            a.write(self.next()?);
+        }
+
+        // SAFETY: All elements have been initialized
+        Some(array.map(|elem| unsafe { elem.assume_init() }))
+    }
+
+    /// Collect an iterator into a new array.
+    fn collect_array_default<const N: usize>(&mut self) -> [Self::Item; N]
+    where
+        Self::Item: Default + Copy,
+    {
+        let mut array: [Self::Item; N] = [Default::default(); N];
+
+        for a in &mut array {
+            let Some(elem) = self.next() else {
+                break;
+            };
+            *a = elem;
+        }
+
+        array
+    }
+
+    /// Collect an iterator into an existing array.
+    fn collect_into_array<const N: usize>(&mut self, array: &mut [Self::Item; N])
+    where
+        Self::Item: Default + Copy,
+    {
+        for a in array {
+            let Some(elem) = self.next() else {
+                break;
+            };
+            *a = elem;
+        }
+    }
+}
+
+impl<I: Iterator> CollectToArray for I {}
 
 #[cfg(test)]
 mod tests {

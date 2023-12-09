@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use bstr::ByteSlice;
 
-use crate::helper::parsing::BytesAsNumber;
+use crate::helper::{parsing::BytesAsNumber, util::CollectToArray};
 
 pub fn part1(input: &str) -> impl Display {
     let input = input.as_bytes();
@@ -11,10 +11,7 @@ pub fn part1(input: &str) -> impl Display {
     let mut seq = [0; 21];
 
     for mut line in input.lines() {
-        let mut seq_nums = line.as_signed_nums();
-        for s in seq.iter_mut() {
-            *s = seq_nums.next().unwrap();
-        }
+        line.as_signed_nums().collect_into_array(&mut seq);
 
         let mut layers = 0;
 
@@ -42,10 +39,7 @@ pub fn part2(input: &str) -> impl Display {
     let mut lmosts = [0; 21];
 
     for mut line in input.lines() {
-        let mut seq_nums = line.as_signed_nums();
-        for s in seq.iter_mut() {
-            *s = seq_nums.next().unwrap();
-        }
+        line.as_signed_nums().collect_into_array(&mut seq);
 
         let mut layers = 0;
 
