@@ -25,9 +25,46 @@ impl<T> Matrix<T> {
         }
     }
 
+    pub fn with_width(width: usize) -> Self {
+        Self {
+            inner: Vec::new(),
+            width: NonZeroUsize::new(width),
+        }
+    }
+
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            inner: Vec::with_capacity(capacity),
+            width: None,
+        }
+    }
+
+    pub fn with_width_and_capacity(width: usize, capacity: usize) -> Self {
+        Self {
+            inner: Vec::with_capacity(capacity),
+            width: NonZeroUsize::new(width),
+        }
+    }
+
     /// Get inner Vec that backs the Matrix.
     pub fn into_vec(self) -> Vec<T> {
         self.inner
+    }
+
+    pub fn as_slice(&self) -> &[T] {
+        &self.inner
+    }
+
+    pub fn iter_elements(&self) -> ElementIter<'_, T> {
+        ElementIter {
+            matrix: self,
+            start: 0,
+            end: self.elements(),
+        }
+    }
+
+    pub fn iter_elements_mut(&mut self) -> ElementIterMut<'_, T> {
+        ElementIterMut::new(self)
     }
 
     /// Get a mutable reference to the inner Vec that backs the Matrix.
@@ -219,6 +256,195 @@ impl<T> Matrix<T> {
     pub fn iter_columns_mut(&mut self) -> ColumnsIterMut<'_, T> {
         ColumnsIterMut::new(self)
     }
+
+    pub fn neighbours<'a: 'b, 'b>(&'a self, row: usize, col: usize) -> [Option<&T>; 4] {
+        let (r, c) = (row, col);
+        [
+            // Top
+            r.checked_sub(1).and_then(|r| self.get(r, c)),
+            // Left
+            c.checked_sub(1).and_then(|c| self.get(r, c)),
+            // Right
+            c.checked_add(1).and_then(|c| {
+                if c < self.columns() {
+                    self.get(r, c)
+                } else {
+                    None
+                }
+            }),
+            // Bottom
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    self.get(r, c)
+                } else {
+                    None
+                }
+            }),
+        ]
+    }
+
+    pub fn orthogonal_neighbours<'a: 'b, 'b>(&'a self, row: usize, col: usize) -> [Option<&T>; 8] {
+        let (r, c) = (row, col);
+        [
+            // Top-left
+            r.checked_sub(1)
+                .and_then(|r| c.checked_sub(1).and_then(|c| self.get(r, c))),
+            // Top-middle
+            r.checked_sub(1).and_then(|r| self.get(r, c)),
+            // Top-right
+            r.checked_sub(1).and_then(|r| {
+                c.checked_add(1).and_then(|c| {
+                    if c < self.columns() {
+                        self.get(r, c)
+                    } else {
+                        None
+                    }
+                })
+            }),
+            // Middle-left
+            c.checked_sub(1).and_then(|c| self.get(r, c)),
+            // Middle-right
+            c.checked_add(1).and_then(|c| {
+                if c < self.columns() {
+                    self.get(r, c)
+                } else {
+                    None
+                }
+            }),
+            // Bottom-left
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    c.checked_sub(1).and_then(|c| self.get(r, c))
+                } else {
+                    None
+                }
+            }),
+            // Bottom-middle
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    self.get(r, c)
+                } else {
+                    None
+                }
+            }),
+            // Bottom-right
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    c.checked_add(1).and_then(|c| {
+                        if c < self.columns() {
+                            self.get(r, c)
+                        } else {
+                            None
+                        }
+                    })
+                } else {
+                    None
+                }
+            }),
+        ]
+    }
+
+    pub fn neighbours_with_indices<'a: 'b, 'b>(
+        &'a self,
+        row: usize,
+        col: usize,
+    ) -> [Option<((usize, usize), &T)>; 4] {
+        let (r, c) = (row, col);
+        [
+            // Top
+            r.checked_sub(1)
+                .and_then(|r| self.get(r, c).map(|v| ((r, c), v))),
+            // Left
+            c.checked_sub(1)
+                .and_then(|c| self.get(r, c).map(|v| ((r, c), v))),
+            // Right
+            c.checked_add(1).and_then(|c| {
+                if c < self.columns() {
+                    self.get(r, c).map(|v| ((r, c), v))
+                } else {
+                    None
+                }
+            }),
+            // Bottom
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    self.get(r, c).map(|v| ((r, c), v))
+                } else {
+                    None
+                }
+            }),
+        ]
+    }
+
+    pub fn orthogonal_neighbours_with_indices<'a: 'b, 'b>(
+        &'a self,
+        row: usize,
+        col: usize,
+    ) -> [Option<((usize, usize), &T)>; 8] {
+        let (r, c) = (row, col);
+        [
+            // Top-left
+            r.checked_sub(1).and_then(|r| {
+                c.checked_sub(1)
+                    .and_then(|c| self.get(r, c).map(|v| ((r, c), v)))
+            }),
+            // Top-middle
+            r.checked_sub(1)
+                .and_then(|r| self.get(r, c).map(|v| ((r, c), v))),
+            // Top-right
+            r.checked_sub(1).and_then(|r| {
+                c.checked_add(1).and_then(|c| {
+                    if c < self.columns() {
+                        self.get(r, c).map(|v| ((r, c), v))
+                    } else {
+                        None
+                    }
+                })
+            }),
+            // Middle-left
+            c.checked_sub(1)
+                .and_then(|c| self.get(r, c).map(|v| ((r, c), v))),
+            // Middle-right
+            c.checked_add(1).and_then(|c| {
+                if c < self.columns() {
+                    self.get(r, c).map(|v| ((r, c), v))
+                } else {
+                    None
+                }
+            }),
+            // Bottom-left
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    c.checked_sub(1)
+                        .and_then(|c| self.get(r, c).map(|v| ((r, c), v)))
+                } else {
+                    None
+                }
+            }),
+            // Bottom-middle
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    self.get(r, c).map(|v| ((r, c), v))
+                } else {
+                    None
+                }
+            }),
+            // Bottom-right
+            r.checked_add(1).and_then(|r| {
+                if r < self.rows() {
+                    c.checked_add(1).and_then(|c| {
+                        if c < self.columns() {
+                            self.get(r, c).map(|v| ((r, c), v))
+                        } else {
+                            None
+                        }
+                    })
+                } else {
+                    None
+                }
+            }),
+        ]
+    }
 }
 
 impl<T> Default for Matrix<T> {
@@ -260,6 +486,42 @@ impl<'m, T> IndexMut<usize> for &'m mut Matrix<T> {
 impl<T> IndexMut<usize> for Matrix<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.row_mut(index).unwrap()
+    }
+}
+
+impl<'m, T> Index<(usize, usize)> for &'m Matrix<T> {
+    type Output = T;
+
+    fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
+        self.get(row, col).unwrap()
+    }
+}
+
+impl<T> Index<(usize, usize)> for Matrix<T> {
+    type Output = T;
+
+    fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
+        self.get(row, col).unwrap()
+    }
+}
+
+impl<'m, T> Index<(usize, usize)> for &'m mut Matrix<T> {
+    type Output = T;
+
+    fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
+        self.get(row, col).unwrap()
+    }
+}
+
+impl<'m, T> IndexMut<(usize, usize)> for &'m mut Matrix<T> {
+    fn index_mut(&mut self, (row, col): (usize, usize)) -> &mut Self::Output {
+        self.get_mut(row, col).unwrap()
+    }
+}
+
+impl<T> IndexMut<(usize, usize)> for Matrix<T> {
+    fn index_mut(&mut self, (row, col): (usize, usize)) -> &mut Self::Output {
+        self.get_mut(row, col).unwrap()
     }
 }
 
@@ -369,7 +631,7 @@ impl<'m, T> DoubleEndedIterator for ColumnIter<'m, T> {
 
 impl<'m, T> ExactSizeIterator for ColumnIter<'m, T> {
     fn len(&self) -> usize {
-        self.rows.len()
+        self.rows.len() - self.column
     }
 }
 
@@ -559,6 +821,138 @@ impl<T> ExtendFromSliceUnchecked<T> for Vec<T> {
     }
 }
 
+pub struct ElementIter<'m, T> {
+    matrix: &'m Matrix<T>,
+    start: usize,
+    end: usize,
+}
+
+impl<'m, T> Iterator for ElementIter<'m, T> {
+    type Item = ((usize, usize), &'m T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.start >= self.end {
+            return None;
+        }
+
+        let width = self.matrix.width();
+        let row = self.start / width;
+        let col = self.start % width;
+        let next = self.matrix.get(row, col)?;
+        self.start += 1;
+
+        Some(((row, col), next))
+    }
+}
+
+impl<'m, T> DoubleEndedIterator for ElementIter<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.end <= self.start {
+            return None;
+        }
+
+        let width = self.matrix.width();
+        let row = self.end / width;
+        let col = self.end % width;
+        let next = self.matrix.get(row, col)?;
+        self.end -= 1;
+
+        Some(((row, col), next))
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ElementIter<'m, T> {
+    fn len(&self) -> usize {
+        self.end - self.start
+    }
+}
+
+pub struct ElementIterMut<'m, T> {
+    slice: &'m [Cell<T>],
+    width: usize,
+    start: usize,
+    end: usize,
+}
+
+impl<'m, T> ElementIterMut<'m, T> {
+    fn new(matrix: &'m mut Matrix<T>) -> Self {
+        let width = matrix.width();
+        let slice = &mut matrix.inner[..];
+        let slice = Cell::from_mut(slice).as_slice_of_cells();
+        unsafe { Self::new_shared(slice, width) }
+    }
+
+    /// # Safety
+    /// No two `ColumnIterMut`s can have the same `column` at the same time.
+    unsafe fn new_shared(slice: &'m [Cell<T>], width: usize) -> Self {
+        Self {
+            slice,
+            width,
+            start: 0,
+            end: slice.len(),
+        }
+    }
+}
+
+impl<'m, T> Iterator for ElementIterMut<'m, T> {
+    type Item = ((usize, usize), &'m mut T);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.start >= self.end {
+            return None;
+        }
+
+        let width = self.width;
+        let row = self.start / width;
+        let col = self.start % width;
+
+        let next = self.slice.get(self.start)?;
+        self.start += 1;
+
+        // SAFETY: No other `ElementIterMut` has this column.
+        Some(((row, col), unsafe { &mut *next.as_ptr() }))
+    }
+}
+
+impl<'m, T> DoubleEndedIterator for ElementIterMut<'m, T> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.end <= self.start {
+            return None;
+        }
+
+        let width = self.width;
+        let row = self.end / width;
+        let col = self.end % width;
+
+        let next = self.slice.get(self.end)?;
+        self.end -= 1;
+
+        Some(((row, col), unsafe { &mut *next.as_ptr() }))
+    }
+}
+
+impl<'m, T> ExactSizeIterator for ElementIterMut<'m, T> {
+    fn len(&self) -> usize {
+        self.end - self.start
+    }
+}
+
+impl<T, R> FromIterator<R> for Matrix<T>
+where
+    T: Clone,
+    R: AsRef<[T]>,
+{
+    fn from_iter<I: IntoIterator<Item = R>>(iter: I) -> Self {
+        let mut matrix = Matrix::new();
+
+        for row in iter {
+            matrix.push(row);
+        }
+
+        matrix
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -690,5 +1084,17 @@ mod tests {
 
         assert!(col.next().is_none());
         assert!(col.next_back().is_none());
+    }
+
+    #[test]
+    fn iter_elements_mut() {
+        let mut matrix = Matrix::new();
+        matrix.push([0]);
+        matrix.push([0]);
+        let mut eles = matrix.iter_elements_mut();
+        let ele0 = eles.next().unwrap();
+        let _ele1 = eles.next().unwrap();
+        *ele0.1 = 2;
+        matrix[0][0] = 3;
     }
 }

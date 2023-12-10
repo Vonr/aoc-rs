@@ -1,10 +1,12 @@
-use std::{collections::HashSet, fmt::Display};
+use rustc_hash::FxHashSet;
+use std::fmt::Display;
 
+use crate::helper::matrix::Matrix;
 use bstr::ByteSlice;
 use pathfinding::prelude::*;
 
 fn to_board(input: &[u8]) -> Matrix<u8> {
-    Matrix::from_rows(input.lines().map(|l| l.bytes())).unwrap()
+    Matrix::from_iter(input.lines())
 }
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -94,19 +96,20 @@ pub fn part1(input: &str) -> impl Display {
     let input = input.as_bytes();
     let mut board = to_board(input);
 
-    let start = board.items().find(|(_, &v)| v == b'S').unwrap();
+    let start = board.iter_elements().find(|(_, &v)| v == b'S').unwrap();
     let start = (start.0, *start.1);
 
-    let res = pathfinding::prelude::dijkstra_all(&start.0, |&(x, y)| {
+    let res = dijkstra_all(&start.0, |&(x, y)| {
         let curr = (x, y);
-        let neighbours = board.neighbours(curr, false);
+        let neighbours = board.neighbours_with_indices(curr.0, curr.1);
         let curr = (curr, board[curr]);
 
         let mut out = Vec::new();
 
-        for nb in neighbours {
-            if reachable(curr, (nb, board[nb])) {
-                out.push((nb, 1u64))
+        for &nb in neighbours.iter().flatten() {
+            let nb = (nb.0, *nb.1);
+            if reachable(curr, nb) {
+                out.push((nb.0, 1u64))
             }
         }
 
@@ -121,9 +124,12 @@ pub fn part2(input: &str) -> impl Display {
     let mut board = to_board(input);
 
     let mut board = {
-        let mut new = Matrix::new_empty(board.columns() * 2);
+        let mut new = Matrix::with_width_and_capacity(
+            board.columns() * 2,
+            board.columns() * 2 * board.rows() * 2,
+        );
         let mut new_row = Vec::with_capacity(new.columns());
-        for row in board.iter() {
+        for row in board.iter_rows() {
             for &p in row {
                 new_row.push(p);
                 if matches!(p, b'-' | b'L' | b'F') {
@@ -132,7 +138,7 @@ pub fn part2(input: &str) -> impl Display {
                     new_row.push(b' ');
                 }
             }
-            new.extend(&new_row);
+            new.push(&new_row);
             new_row.clear();
 
             for &p in row {
@@ -143,7 +149,7 @@ pub fn part2(input: &str) -> impl Display {
                 }
                 new_row.push(b' ');
             }
-            new.extend(&new_row);
+            new.push(&new_row);
             new_row.clear();
         }
         new
@@ -152,7 +158,7 @@ pub fn part2(input: &str) -> impl Display {
     let rows = board.rows();
     let cols = board.columns();
 
-    let start = board.items().find(|(_, &v)| v == b'S').unwrap();
+    let start = board.iter_elements().find(|(_, &v)| v == b'S').unwrap();
     let start = (start.0, *start.1);
 
     let spos = start.0;
@@ -169,39 +175,40 @@ pub fn part2(input: &str) -> impl Display {
         board[(spos.0, (spos.1 + 1) % cols)] = b'-';
     }
 
-    let mut lp = pathfinding::prelude::bfs_reach(start.0, |&(x, y)| {
+    let mut lp = bfs_reach(start.0, |&(x, y)| {
         let curr = (x, y);
-        let neighbours = board.neighbours(curr, false);
+        let neighbours = board.neighbours_with_indices(curr.0, curr.1);
         let curr = (curr, board[curr]);
 
         let mut out = Vec::new();
 
-        for nb in neighbours {
-            if reachable(curr, (nb, board[nb])) {
-                out.push(nb)
+        for &nb in neighbours.iter().flatten() {
+            let nb = (nb.0, *nb.1);
+            if reachable(curr, nb) {
+                out.push(nb.0)
             }
         }
 
         out
     })
-    .collect::<HashSet<_>>();
+    .collect::<FxHashSet<_>>();
 
     let mut tiles = board
-        .items()
+        .iter_elements()
         .filter(|i| !lp.contains(&i.0) && i.0 .0 & 1 == 0 && i.0 .1 & 1 == 0)
         .map(|i| i.0)
-        .collect::<HashSet<_>>();
+        .collect::<FxHashSet<_>>();
 
     for r in 0..rows {
         if board[(r, 0)] == b'.' || board[(r, 0)] == b' ' {
-            let reachable = pathfinding::prelude::bfs_reach((r, 0), |&(x, y)| {
+            let reachable = bfs_reach((r, 0), |&(x, y)| {
                 let curr = (x, y);
-                let neighbours = board.neighbours(curr, false);
+                let neighbours = board.neighbours_with_indices(curr.0, curr.1);
                 let curr = (curr, board[curr]);
 
                 let mut out = Vec::new();
 
-                for nb in neighbours {
+                for &(nb, _) in neighbours.iter().flatten() {
                     if !lp.contains(&nb) {
                         lp.insert(nb);
                         out.push(nb);
@@ -217,17 +224,17 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         if board[(r, cols - 1)] == b'.' || board[(r, cols - 1)] == b' ' {
-            let reachable = pathfinding::prelude::bfs_reach((r, cols - 1), |&(x, y)| {
+            let reachable = bfs_reach((r, cols - 1), |&(x, y)| {
                 let curr = (x, y);
-                let neighbours = board.neighbours(curr, false);
+                let neighbours = board.neighbours_with_indices(curr.0, curr.1);
                 let curr = (curr, board[curr]);
 
                 let mut out = Vec::new();
 
-                for nb in neighbours {
+                for &(nb, v) in neighbours.iter().flatten() {
                     if !lp.contains(&nb) {
                         lp.insert(nb);
-                        out.push(nb)
+                        out.push(nb);
                     }
                 }
 
@@ -242,17 +249,17 @@ pub fn part2(input: &str) -> impl Display {
 
     for c in 0..cols {
         if board[(0, c)] == b'.' || board[(0, c)] == b' ' {
-            let reachable = pathfinding::prelude::bfs_reach((0, c), |&(x, y)| {
+            let reachable = bfs_reach((0, c), |&(x, y)| {
                 let curr = (x, y);
-                let neighbours = board.neighbours(curr, false);
+                let neighbours = board.neighbours_with_indices(curr.0, curr.1);
                 let curr = (curr, board[curr]);
 
                 let mut out = Vec::new();
 
-                for nb in neighbours {
+                for &(nb, _) in neighbours.iter().flatten() {
                     if !lp.contains(&nb) {
                         lp.insert(nb);
-                        out.push(nb)
+                        out.push(nb);
                     }
                 }
 
@@ -265,17 +272,17 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         if board[(rows - 1, c)] == b'.' || board[(rows - 1, c)] == b' ' {
-            let reachable = pathfinding::prelude::bfs_reach((rows - 1, c), |&(x, y)| {
+            let reachable = bfs_reach((rows - 1, c), |&(x, y)| {
                 let curr = (x, y);
-                let neighbours = board.neighbours(curr, false);
+                let neighbours = board.neighbours_with_indices(curr.0, curr.1);
                 let curr = (curr, board[curr]);
 
                 let mut out = Vec::new();
 
-                for nb in neighbours {
+                for &(nb, _) in neighbours.iter().flatten() {
                     if !lp.contains(&nb) {
                         lp.insert(nb);
-                        out.push(nb)
+                        out.push(nb);
                     }
                 }
 
