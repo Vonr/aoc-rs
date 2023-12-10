@@ -99,24 +99,38 @@ pub fn part1(input: &str) -> impl Display {
     let start = board.iter_elements().find(|(_, &v)| v == b'S').unwrap();
     let start = (start.0, *start.1);
 
-    let res = dijkstra_all(&start.0, |&(x, y)| {
-        let curr = (x, y);
-        let neighbours = board.neighbours_with_indices(curr.0, curr.1);
-        let curr = (curr, board[curr]);
+    let mut prev = start;
+    let curr = board
+        .neighbours_with_indices(start.0 .0, start.0 .1)
+        .into_iter()
+        .flatten()
+        .find(|&n| reachable(start, (n.0, *n.1)))
+        .unwrap();
+    let mut curr = (curr.0, *curr.1);
 
-        let mut out = Vec::new();
+    let mut len = 0;
+    while curr.1 != b'S' {
+        let Some(curr_shape) = D::from_shape(curr.1) else {
+            break;
+        };
 
-        for &nb in neighbours.iter().flatten() {
-            let nb = (nb.0, *nb.1);
-            if reachable(curr, nb) {
-                out.push((nb.0, 1u64))
-            }
+        let prev_dir = D::from_positions(curr.0, prev.0);
+        let curr_dir = curr_shape.into_iter().find(|&d| d != prev_dir).unwrap();
+
+        prev = curr;
+        match curr_dir {
+            D::N => curr.0 .0 -= 1,
+            D::S => curr.0 .0 += 1,
+            D::E => curr.0 .1 += 1,
+            D::W => curr.0 .1 -= 1,
         }
 
-        out
-    });
+        curr = (curr.0, board[curr.0]);
 
-    res.values().max_by_key(|v| v.1).unwrap().1
+        len += 1;
+    }
+
+    (len + 1) / 2
 }
 
 pub fn part2(input: &str) -> impl Display {
