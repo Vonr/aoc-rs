@@ -226,6 +226,7 @@ pub fn part2(input: &str) -> impl Display {
 
                 for nb in neighbours {
                     if !lp.contains(&nb) {
+                        lp.insert(nb);
                         out.push(nb)
                     }
                 }
@@ -250,6 +251,7 @@ pub fn part2(input: &str) -> impl Display {
 
                 for nb in neighbours {
                     if !lp.contains(&nb) {
+                        lp.insert(nb);
                         out.push(nb)
                     }
                 }
@@ -272,6 +274,7 @@ pub fn part2(input: &str) -> impl Display {
 
                 for nb in neighbours {
                     if !lp.contains(&nb) {
+                        lp.insert(nb);
                         out.push(nb)
                     }
                 }
