@@ -10,61 +10,64 @@ fn to_board(input: &[u8]) -> Matrix<u8> {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
-enum D {
-    N,
-    S,
-    E,
-    W,
+enum Direction {
+    North,
+    South,
+    East,
+    West,
 }
 
-impl D {
+impl Direction {
+    #[inline]
     fn from_positions(from: (usize, usize), to: (usize, usize)) -> Self {
-        use D::*;
+        use Direction::*;
         let (fr, fc) = from;
         let (tr, tc) = to;
 
         if tr > fr {
-            return S;
+            return South;
         }
 
         if tr < fr {
-            return N;
+            return North;
         }
 
         if tc > fc {
-            return E;
+            return East;
         }
 
-        W
+        West
     }
 
+    #[inline]
     fn from_shape(shape: u8) -> Option<[Self; 2]> {
-        use D::*;
+        use Direction::*;
         let out = match shape {
-            b'|' => [N, S],
-            b'-' => [W, E],
-            b'L' => [N, E],
-            b'J' => [N, W],
-            b'7' => [S, W],
-            b'F' => [S, E],
+            b'|' => [North, South],
+            b'-' => [West, East],
+            b'L' => [North, East],
+            b'J' => [North, West],
+            b'7' => [South, West],
+            b'F' => [South, East],
             _ => return None,
         };
 
         Some(out)
     }
 
-    fn opp(&self) -> Self {
+    #[inline]
+    fn opposite(&self) -> Self {
         match self {
-            D::N => D::S,
-            D::S => D::N,
-            D::E => D::W,
-            D::W => D::E,
+            Direction::North => Direction::South,
+            Direction::South => Direction::North,
+            Direction::East => Direction::West,
+            Direction::West => Direction::East,
         }
     }
 }
 
 fn reachable(mut from: ((usize, usize), u8), mut to: ((usize, usize), u8)) -> bool {
-    use D::*;
+    use Direction::*;
 
     if from.1 == b'.' || to.1 == b'.' || from.1 == b' ' || to.1 == b' ' {
         return false;
@@ -74,18 +77,18 @@ fn reachable(mut from: ((usize, usize), u8), mut to: ((usize, usize), u8)) -> bo
         (to, from) = (from, to);
     }
 
-    let d = D::from_positions(from.0, to.0);
+    let d = Direction::from_positions(from.0, to.0);
 
-    let Some(td) = D::from_shape(to.1) else {
+    let Some(td) = Direction::from_shape(to.1) else {
         return false;
     };
-    let td = td.map(|d| d.opp());
+    let td = td.map(|d| d.opposite());
 
     if from.1 == b'S' {
         return td.contains(&d);
     }
 
-    let Some(fd) = D::from_shape(from.1) else {
+    let Some(fd) = Direction::from_shape(from.1) else {
         unreachable!();
     };
 
@@ -96,41 +99,40 @@ pub fn part1(input: &str) -> impl Display {
     let input = input.as_bytes();
     let mut board = to_board(input);
 
-    let start = board.iter_elements().find(|(_, &v)| v == b'S').unwrap();
-    let start = (start.0, *start.1);
+    let start = board.iter_elements().find(|(_, &v)| v == b'S').unwrap().0;
 
     let mut prev = start;
-    let curr = board
-        .neighbours_with_indices(start.0 .0, start.0 .1)
-        .into_iter()
-        .flatten()
-        .find(|&n| reachable(start, (n.0, *n.1)))
-        .unwrap();
-    let mut curr = (curr.0, *curr.1);
 
-    let mut len = 0;
-    while curr.1 != b'S' {
-        let Some(curr_shape) = D::from_shape(curr.1) else {
-            break;
-        };
+    let mut curr = if board[(start.0.saturating_sub(1), start.1)] == b'|' {
+        (start.0.saturating_sub(1), start.1)
+    } else if board.get(start.0 + 1, start.1).copied() == Some(b'|') {
+        (start.0 + 1, start.1)
+    } else if board[(start.0, start.1.saturating_sub(1))] == b'-' {
+        (start.0, start.1.saturating_sub(1))
+    } else if board.get(start.0, start.1 + 1).copied() == Some(b'-') {
+        (start.0, start.1 + 1)
+    } else {
+        unreachable!()
+    };
 
-        let prev_dir = D::from_positions(curr.0, prev.0);
+    let mut len = 1;
+    while curr != start {
+        let curr_shape = Direction::from_shape(board[curr]).unwrap();
+        let prev_dir = Direction::from_positions(curr, prev);
         let curr_dir = curr_shape.into_iter().find(|&d| d != prev_dir).unwrap();
 
         prev = curr;
         match curr_dir {
-            D::N => curr.0 .0 -= 1,
-            D::S => curr.0 .0 += 1,
-            D::E => curr.0 .1 += 1,
-            D::W => curr.0 .1 -= 1,
+            Direction::North => curr.0 -= 1,
+            Direction::South => curr.0 += 1,
+            Direction::East => curr.1 += 1,
+            Direction::West => curr.1 -= 1,
         }
-
-        curr = (curr.0, board[curr.0]);
 
         len += 1;
     }
 
-    (len + 1) / 2
+    len / 2
 }
 
 pub fn part2(input: &str) -> impl Display {
