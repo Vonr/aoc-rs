@@ -6,7 +6,7 @@ use num_traits::{PrimInt, Unsigned};
 
 use crate::helper::{
     parsing::{BytesAsNumber, PartialConsume},
-    util::CollectToArray,
+    util::{CollectToArray, Timer},
 };
 
 pub fn part1(input: &str) -> impl Display {
@@ -28,7 +28,7 @@ pub fn part1(input: &str) -> impl Display {
             }
         }
 
-        'outer: for comb in 0..1 << springs.len() as u32 {
+        'outer: for mut comb in 0..1 << springs.len() as u32 {
             if comb & normal != 0 {
                 continue;
             }
@@ -38,15 +38,18 @@ pub fn part1(input: &str) -> impl Display {
             }
 
             let mut num_secs = 0;
-            for (idx, sec) in comb
-                .view_bits::<LocalBits>()
-                .split(|_pos, bit| !bit)
-                .filter(|sec| !sec.is_empty())
-                .enumerate()
-            {
-                num_secs += 1;
-                if idx >= lengths.len() || sec.len() as u32 != lengths[idx] {
-                    continue 'outer;
+
+            while comb != 0 {
+                if comb & 1 == 0 {
+                    comb >>= comb.trailing_zeros();
+                } else {
+                    let chunk_size = comb.trailing_ones();
+                    comb >>= chunk_size as usize;
+
+                    if num_secs >= lengths.len() || chunk_size != lengths[num_secs] {
+                        continue 'outer;
+                    }
+                    num_secs += 1;
                 }
             }
 
@@ -68,6 +71,7 @@ pub fn part2(input: &str) -> impl Display {
 
     for (idx, mut line) in input.lines().enumerate() {
         println!("line {idx}");
+        let timer = Timer::new();
         let mut springs = line.skip_to_unit(b' ').repeatn(5);
         let mut broken = bitarr![0; 100];
         let mut normal = bitarr![0; 100];
@@ -82,9 +86,6 @@ pub fn part2(input: &str) -> impl Display {
         }
 
         'outer: for mut comb in 0u128..1 << springs.len() as u128 {
-            if comb & 65535 == 0 {
-                println!("{comb:0130b}");
-            }
             if comb & unsafe { std::mem::transmute::<_, u128>(normal.data) } != 0 {
                 continue;
             }
@@ -99,16 +100,15 @@ pub fn part2(input: &str) -> impl Display {
 
             while comb != 0 {
                 if comb & 1 == 0 {
-                    comb = comb >> comb.trailing_zeros() as usize;
+                    comb >>= comb.trailing_zeros();
                 } else {
-                    num_secs += 1;
                     let chunk_size = comb.trailing_ones();
+                    comb >>= chunk_size as usize;
 
                     if num_secs >= lengths.len() || chunk_size != lengths[num_secs] {
                         continue 'outer;
                     }
-
-                    comb >>= chunk_size as usize;
+                    num_secs += 1;
                 }
             }
 
